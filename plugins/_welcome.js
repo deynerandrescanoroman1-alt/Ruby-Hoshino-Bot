@@ -4,12 +4,29 @@ const newsletterJid = '120363335626706839@newsletter';
 const newsletterName = '𖥔ᰔᩚ⋆｡˚ ꒰🍒 ʀᴜʙʏ-ʜᴏꜱʜɪɴᴏ | ᴄʜᴀɴɴᴇʟ-ʙᴏᴛ 💫꒱࣭';
 const packname = '⏤͟͞ू⃪  ̸̷͢𝐑𝐮𝐛y͟ 𝐇𝐨𝐬𝐡𝐢n͟ᴏ 𝐁𝐨t͟˚₊·—̳͟͞͞♡̥';
 const iconos = [
-'https://qu.ax/kCFBu.jpeg','https://qu.ax/oywhU.jpeg','https://qu.ax/OqruN.jpeg',
-'https://qu.ax/EQNsz.jpeg','https://qu.ax/zKJLa.jpeg','https://qu.ax/jSfLz.jpg',
-'https://qu.ax/vEYfK.jpg','https://qu.ax/vEYfK.jpg','https://qu.ax/cQVWG.jpg',
-'https://qu.ax/aKHwP.jpg','https://qu.ax/jpdRe.jpg','https://qu.ax/DomyS.jpg',
-'https://qu.ax/fwbjQ.jpg','https://qu.ax/gqMcL.jpg','https://qu.ax/oYaOd.jpg',
-'https://qu.ax/krkFy.jpeg', 
+'https://qu.ax/wwbar.jpg',
+'https://qu.ax/iFzQw.jpeg',
+'https://qu.ax/dsZyo.jpeg',
+'https://qu.ax/eNdBB.jpeg',
+'https://qu.ax/MSzGw.jpeg',
+'https://qu.ax/JqMBW.jpeg',
+'https://qu.ax/HKcSr.jpeg',
+'https://qu.ax/HOuUU.jpeg',
+'https://qu.ax/ojUNn.jpeg',
+'https://qu.ax/HtqBi.jpeg',
+'https://qu.ax/bmQOA.jpeg',
+'https://qu.ax/nTFtU.jpeg',
+'https://qu.ax/PYKgC.jpeg',
+'https://qu.ax/exeBy.jpeg',
+'https://qu.ax/SCxhf.jpeg',
+'https://qu.ax/sqxSO.jpeg',
+'https://qu.ax/cdSYJ.jpeg',
+'https://qu.ax/dRmZY.jpeg',
+'https://qu.ax/ubwLP.jpg',
+'https://qu.ax/JSgSc.jpg',
+'https://qu.ax/FUXJo.jpg',
+'https://qu.ax/qhKUf.jpg',
+'https://qu.ax/mZKgt.jpg'
 ];
 const getRandomIcono = () => iconos[Math.floor(Math.random() * iconos.length)];
 async function generarBienvenida({ conn, userId, groupMetadata, chat }) {
@@ -25,12 +42,20 @@ caption = chat.welcomeText
 .replace(/@subject/g, groupMetadata.subject)
 .replace(/@desc/g, desc);
 } else {
-const defaultWelcomeMessage = `¡Hola, @user! 🌸\nTe damos la bienvenida al súper grupo *«@subject»*\n\n「 🌷 」 *Lee la descripción:*\n@desc\n\n¡Esperamos que disfrutes tu estadía! 💖`;
-const mensaje = defaultWelcomeMessage
 .replace(/@user/g, username)
-.replace(/@subject/g, groupMetadata.subject)
-.replace(/@desc/g, desc);
-caption = `╭─┈「 🌸 𝑩𝑰𝑬𝑵𝑽𝑬𝑵𝑰𝑫𝑨 🌸 」\n│\n│ 🎀  ${mensaje}\n│\n├─┈「 𝐈𝐍𝐅𝐎 𝐃𝐄𝐋 𝐆𝐑𝐔𝐏𝐎 」\n│\n│ 👥  *Miembros:* ${groupSize}\n│ 📅  *Fecha:* ${fecha}\n│\n╰─┈「 ${packname} 」`;
+.replace(/@subject/g, groupMetadata.subject);
+caption = `𝆺𝅥 𝆭    ִ ֗ 𝆺𝅥 𝆭    ִ ֗ 𝆺𝅥 𝆭    ִ ֗ 𝆺𝅥 𝆭    ִ ֗ 𝆺𝅥 𝆭  𝆺𝅥 𝆭    ִ ֗ 𝆺𝅥 𝆭    ִ ֗ 𝆺𝅥 𝆭𝆺𝅥 𝆭    ִ ֗ 𝆺𝅥 𝆭    ִ ֗ 𝆺𝅥 𝆭    ִ ֗ 𝆺𝅥 𝆭    ִ ֗ 𝆺𝅥 𝆭  𝆺𝅥 𝆭    ִ ֗ 𝆺𝅥 𝆭    ִ ֗ 𝆺𝅥 𝆭𝆺𝅥 
+𝙃𝙤𝙡𝙖, @user! ✨\n𝘽𝙄𝙀𝙉𝙑𝙀𝙉𝙄𝘿𝙊/𝘼@ 𝘼𝙇 𝙂𝙍𝙐𝙋𝙊:\n *@subject* \n\n¡𝙀𝙨𝙥𝙚𝙧𝙖𝙢𝙤𝙨 𝙦𝙪𝙚 𝙙𝙞𝙨𝙛𝙧𝙪𝙩𝙚𝙨 𝙩𝙪 𝙚𝙨𝙩𝙖𝙙𝙞𝙖! 💖
+
+.   ͜ ︵𝅽◌⃘࣪۟୭۪۪ׄꪆ 漢̸𝅮 ◌⃘࣪۟୭۪۪ׄꪆ︵ ͜    .
+「 𝐈𝐍𝐅𝐎 𝐃𝐄𝐋 𝐆𝐑𝐔𝐏𝐎 」
+.ֶָ֢❀⃝🪷  *𝙈𝙞𝙚𝙢𝙗𝙧𝙤𝙨:* ${groupSize}
+.ֶָ֢❀⃝🪷  *𝙁𝙚𝙘𝙝𝙖:* ${fecha}
+
+ㅤ  ㅤׄ ׅ ׄ ⋱＼ ׄ   ׅ ⡇ ׅ ׄ   ／⋰ ׄ   ׅ ׄ
+> ᴘᴜᴇᴅᴇs crear un mensaje de bienvenida
+> ᴜsᴀɴᴅᴏ: *#setwelcome*
+ㅤ ︶ ྀི◟ ͜◞˚̣̣̣  ⋰ ⫶ ⋱    ˚̣̣̣◟ ͜◞ ྀི︶`;
 }
 return { pp, caption, mentions: [userId] };
 }
@@ -45,11 +70,18 @@ caption = chat.byeText
 .replace(/@user/g, username)
 .replace(/@subject/g, groupMetadata.subject);
 } else {
-const defaultByeMessage = `¡Adiós, @user! 👋\nTe extrañaremos en *«@subject»*.\n¡Vuelve pronto! ૮₍ ˃ ⤙ ˂ ₎ა`;
-const mensaje = defaultByeMessage
 .replace(/@user/g, username)
 .replace(/@subject/g, groupMetadata.subject);
-caption = `╭─┈「 💔 𝑨𝑫𝑰𝑶́𝑺 💔 」\n│\n│ ૮₍ ˃ ⤙ ˂ ₎ა  ${mensaje}\n│\n├─┈「 𝐈𝐍𝐅𝐎 𝐃𝐄𝐋 𝐆𝐑𝐔𝐏𝐎 」\n│\n│ 👥  *Miembros:* ${groupSize}\n│ 📅  *Fecha:* ${fecha}\n│\n╰─┈「 ${packname} 」`;
+caption = `૮꒰ී ◞ ◟ ꒱ა 𝙃𝙖𝙨𝙩𝙖 𝙋𝙧𝙤𝙣𝙩𝙤.. 
+
+𓍯 ꒰ 𝙎𝙀 𝙃𝘼 𝙄𝘿𝙊 @user ꒱ 🌸
+𝘿𝙚𝙡 𝙂𝙍𝙐𝙋𝙊 *@subject* 𝗣𝗔𝗥𝗔 𝗩𝗘𝗥 𝗢𝗦𝗛𝗜 𝗡𝗢 𝗞𝗢 
+
+𝘼𝙝𝙤𝙧𝙖 𝙎𝙤𝙢𝙤𝙨 ${groupSize} 𝙈𝙞𝙚𝙢𝙗𝙧𝙤𝙨
+¡𝙑𝙐𝙀𝙇𝙑𝙀 𝙋𝙍𝙊𝙉𝙏𝙊! ૮₍ ˃ ⤙ ˂ ₎ა
+
+> ᴘᴜᴇᴅᴇs ᴄʀᴇᴀʀ ᴜɴ ᴍᴇɴsᴀᴊᴇ ᴅᴇ ᴅᴇsᴘᴇᴅɪᴅᴀ
+> ᴜsᴀɴᴅᴏ: *#setbye*`;
 }
 return { pp, caption, mentions: [userId] };
 }
@@ -58,7 +90,7 @@ handler.before = async function (m, { conn, participants, groupMetadata }) {
 if (!m.messageStubType || !m.isGroup) return !0
 const chat = global.db.data.chats[m.chat]
 if (!chat) return !0;
-const primaryBot = chat.primaryBot
+const primaryBot = chat.botPrimario
 if (primaryBot && conn.user.jid !== primaryBot) return !0
 const userId = m.messageStubParameters[0]
 if (chat.welcome && m.messageStubType == WAMessageStubType.GROUP_PARTICIPANT_ADD) {
