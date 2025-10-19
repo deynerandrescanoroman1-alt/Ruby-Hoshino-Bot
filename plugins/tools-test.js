@@ -11,13 +11,13 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const rubyJBOptions = {}
 
-// Función para generar códigos personalizados que funcionen
+// Función para generar códigos personalizados
 function generarCodigoPersonalizado() {
     const formatos = [
-        () => `SPEE-${Math.floor(100 + Math.random() * 900)}`, // SPEE-123
-        () => `3XYZ-${Math.floor(100 + Math.random() * 900)}`, // 2025-456
-        () => `ARLE-${Math.floor(1000 + Math.random() * 9000)}`, // ARLE-7890
-        () => `RUBY-${Math.floor(100 + Math.random() * 900)}` // RUBY-321
+        () => `SPEE-${Math.floor(100 + Math.random() * 900)}`,
+        () => `2025-${Math.floor(100 + Math.random() * 900)}`, 
+        () => `ARLE-${Math.floor(1000 + Math.random() * 9000)}`,
+        () => `RUBY-${Math.floor(100 + Math.random() * 900)}`
     ]
     return formatos[Math.floor(Math.random() * formatos.length)]()
 }
@@ -40,8 +40,7 @@ let handler = async (m, { conn, args, usedPrefix, command, isOwner }) => {
         return m.reply(`ꕥ No se han encontrado espacios para *Sub-Bots* disponibles.`)
     }
     
-    let mentionedJid = await m.mentionedJid
-    let who = mentionedJid && mentionedJid[0] ? mentionedJid[0] : m.fromMe ? conn.user.jid : m.sender
+    let who = m.mentionedJid && m.mentionedJid[0] ? m.mentionedJid[0] : m.fromMe ? conn.user.jid : m.sender
     let id = `${who.split`@`[0]}`
     let pathRubyJadiBot = path.join('./sessions/', id)
     
@@ -69,46 +68,44 @@ export default handler
 export async function rubyJadiBot(options) {
     let { pathRubyJadiBot, m, conn, args, usedPrefix, command } = options
     
-    let txtCode, codeBot
+    let txtCode
     
-    const pathCreds = path.join(pathRubyJadiBot, "creds.json")
     if (!fs.existsSync(pathRubyJadiBot)){
         fs.mkdirSync(pathRubyJadiBot, { recursive: true })
     }
     
     try {
-        let { version, isLatest } = await fetchLatestBaileysVersion()
+        let { version } = await fetchLatestBaileysVersion()
         
-        const msgRetry = (MessageRetryMap) => { }
         const msgRetryCache = new NodeCache()
-        const { state, saveState, saveCreds } = await useMultiFileAuthState(pathRubyJadiBot)
+        const { state, saveCreds } = await useMultiFileAuthState(pathRubyJadiBot)
         
         const connectionOptions = {
-            logger: pino({ level: "fatal" }),
+            logger: pino({ level: "silent" }),
             printQRInTerminal: false,
             auth: { 
                 creds: state.creds, 
                 keys: makeCacheableSignalKeyStore(state.keys, pino({level: 'silent'})) 
             },
-            msgRetry,
-            msgRetryCache, 
             browser: ['Windows', 'Firefox'],
             version: version,
-            generateHighQualityLinkPreview: true
         }
         
         let sock = makeWASocket(connectionOptions)
         sock.isInit = false
-        let isInit = true
         
-        setTimeout(async () => {
+        const cleanupTimeout = setTimeout(() => {
             if (!sock.user) {
-                try { fs.rmSync(pathRubyJadiBot, { recursive: true, force: true }) } catch {}
-                try { sock.ws?.close() } catch {}
+                try { 
+                    sock.ws?.close() 
+                } catch {}
                 sock.ev.removeAllListeners()
                 let i = global.conns.indexOf(sock)
                 if (i >= 0) global.conns.splice(i, 1)
-                console.log(`[AUTO-LIMPIEZA] Sesión ${path.basename(pathRubyJadiBot)} eliminada.`)
+                try {
+                    fs.rmSync(pathRubyJadiBot, { recursive: true, force: true })
+                } catch {}
+                console.log(`[LIMPIADO] Sesión ${path.basename(pathRubyJadiBot)} eliminada.`)
             }
         }, 60000)
         
@@ -126,26 +123,28 @@ export async function rubyJadiBot(options) {
                     // Formatear código real para mostrar
                     let codigoMostrar = realCode.match(/.{1,4}/g)?.join('-') || realCode
                     
-                    // También generar código personalizado para referencia
+                    // Generar código personalizado
                     let codigoPersonalizado = generarCodigoPersonalizado()
                     
                     // Enviar instrucciones con código REAL
                     txtCode = await conn.sendMessage(m.chat, {
-                        text: `✿ *Vincula tu cuenta usando el código.*\n\n[ ✰ ] Sigue las instrucciones:\n*1 » Mas opciones*\n*2 » Dispositivos vinculados*\n*3 » Vincular nuevo dispositivo*\n*4 » Vincular usando numero*\n\n🔐 *Código:* ${codigoMostrar}\n\n💎 *Tu código personalizado:* ${codigoPersonalizado}\n\n> *Nota:* Usa el código de arriba para vincular`
+                        text: `✿ *VINCULA TU CUENTA*\n\n📱 *Sigue estos pasos:*\n1. Abre WhatsApp > Menú ⋮\n2. Dispositivos vinculados\n3. Vincular nuevo dispositivo\n4. Usar código de vinculación\n\n🔐 *TU CÓDIGO:* ${codigoMostrar}\n\n💎 *ID Personalizado:* ${codigoPersonalizado}\n\n⏰ *Expira en 20 segundos*`
                     }, { quoted: m })
                     
-                    console.log(`Código REAL: ${codigoMostrar} | Personalizado: ${codigoPersonalizado} | Para: ${phoneNumber}`)
+                    console.log(`✅ Código generado para ${phoneNumber}: ${codigoMostrar}`)
                     
                 } catch (error) {
                     console.error("Error generando código:", error)
                     await conn.sendMessage(m.chat, { 
-                        text: '❌ Error al generar el código. Intenta nuevamente.' 
+                        text: '❌ Error al generar el código. Espera 2 minutos y vuelve a intentar.' 
                     }, { quoted: m })
                 }
             }
             
             if (txtCode && txtCode.key) {
-                setTimeout(() => { conn.sendMessage(m.sender, { delete: txtCode.key })}, 30000)
+                setTimeout(() => { 
+                    conn.sendMessage(m.sender, { delete: txtCode.key })
+                }, 30000)
             }
             
             const reason = lastDisconnect?.error?.output?.statusCode || lastDisconnect?.error?.output?.payload?.statusCode
@@ -159,23 +158,12 @@ export async function rubyJadiBot(options) {
                 }
                 if (reason === DisconnectReason.connectionReplaced) {
                     console.log(chalk.bold.magentaBright(`Conexión reemplazada: +${path.basename(pathRubyJadiBot)}`))
-                    try {
-                        if (options.fromCommand && m?.chat) {
-                            await conn.sendMessage(m.chat, { 
-                                text: '⚠️ Se detectó una nueva sesión. Si necesitas conectar de nuevo, usa el comando otra vez.' 
-                            }, { quoted: m })
-                        }
-                    } catch {}
-                }
-                if (reason === DisconnectReason.restartRequired) {
-                    console.log(chalk.bold.magentaBright(`Reinicio requerido: +${path.basename(pathRubyJadiBot)}`))
-                }
-                if (reason === DisconnectReason.timedOut) {
-                    console.log(chalk.bold.magentaBright(`Timeout: +${path.basename(pathRubyJadiBot)}`))
                 }
             }
             
             if (connection === 'open') {
+                clearTimeout(cleanupTimeout)
+                
                 let userName = sock.authState.creds.me?.name || 'Usuario'
                 let userJid = sock.authState.creds.me?.jid || `${path.basename(pathRubyJadiBot)}@s.whatsapp.net`
                 
@@ -186,61 +174,39 @@ export async function rubyJadiBot(options) {
                 
                 if (m?.chat) {
                     await conn.sendMessage(m.chat, { 
-                        text: `🎉 *Sub-Bot conectado exitosamente!* [@${m.sender.split('@')[0]}]\n\n📱 *Usuario:* ${userName}\n🔗 *Estado:* ✅ Conectado\n\n¡Ahora puedes usar los comandos del bot!`, 
+                        text: `🎉 *¡CONEXIÓN EXITOSA!*\n\n👤 *Usuario:* @${m.sender.split('@')[0]}\n📱 *Sub-Bot:* ${userName}\n🔗 *Estado:* ✅ ACTIVO\n\n¡El sub-bot está listo para usar!`, 
                         mentions: [m.sender] 
                     }, { quoted: m })
                 }
             }
         }
         
-        let handler = await import('../handler.js')
-        let creloadHandler = async function (restatConn) {
-            try {
-                const Handler = await import(`../handler.js?update=${Date.now()}`).catch(console.error)
-                if (Object.keys(Handler || {}).length) handler = Handler
-            } catch (e) {
-                console.error('Error cargando handler:', e)
-            }
-            
-            if (restatConn) {
-                const oldChats = sock.chats
-                try { sock.ws.close() } catch { }
-                sock.ev.removeAllListeners()
-                sock = makeWASocket(connectionOptions, { chats: oldChats })
-                isInit = true
-            }
-            
-            sock.handler = handler.handler.bind(sock)
-            sock.connectionUpdate = connectionUpdate.bind(sock)
-            sock.credsUpdate = saveCreds.bind(sock, true)
-            
-            sock.ev.on("messages.upsert", sock.handler)
-            sock.ev.on("connection.update", sock.connectionUpdate)
-            sock.ev.on("creds.update", sock.credsUpdate)
-            
-            isInit = false
-            return true
-        }
+        // Cargar handler
+        let handlerModule = await import('../handler.js')
+        sock.handler = handlerModule.handler.bind(sock)
+        sock.connectionUpdate = connectionUpdate.bind(sock)
+        sock.credsUpdate = saveCreds.bind(sock, true)
         
-        creloadHandler(false)
+        sock.ev.on("messages.upsert", sock.handler)
+        sock.ev.on("connection.update", sock.connectionUpdate)
+        sock.ev.on("creds.update", sock.credsUpdate)
         
     } catch (error) {
         console.error('Error en rubyJadiBot:', error)
         if (m?.chat) {
             await conn.sendMessage(m.chat, { 
-                text: '❌ Error al procesar la solicitud. Intenta nuevamente.' 
+                text: '❌ Error al iniciar la conexión. Intenta nuevamente.' 
             }, { quoted: m })
         }
     }
 }
 
 function msToTime(duration) {
-    var milliseconds = parseInt((duration % 1000) / 100),
-    seconds = Math.floor((duration / 1000) % 60),
+    var seconds = Math.floor((duration / 1000) % 60),
     minutes = Math.floor((duration / (1000 * 60)) % 60)
     
     minutes = (minutes < 10) ? '0' + minutes : minutes
     seconds = (seconds < 10) ? '0' + seconds : seconds
     
     return minutes + ' m y ' + seconds + ' s '
-}     }
+                                    }
