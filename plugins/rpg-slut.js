@@ -24,15 +24,15 @@ const handler = async (m, { conn }) => {
     if (didWin) {
         const amount = Math.floor((Math.random() * 10000 + 4000) * premiumBenefit);
         users[senderId].coin += amount;
-
+        await m.react('🥵');
         const phrase = pickRandom(frasesGanancia).replace('@usuario', `@${targetId.split('@')[0]}`);
         await conn.sendMessage(m.chat, {
-            text: `✨ ${phrase} y ganaste *¥${amount.toLocaleString()} ${m.moneda}*.`,
+            text: `${phrase} y ganaste *¥${amount.toLocaleString()} ${m.moneda}*.`,
             contextInfo: { mentionedJid: [targetId] }
         }, { quoted: m });
 
     } else {
-        const amount = Math.floor(Math.random() * 18000 + 8000); // pérdidas altas
+        const amount = Math.floor(Math.random() * 18000 + 8000);
         let total = users[senderId].coin + users[senderId].bank;
         let loss = Math.min(total, amount);
 
@@ -43,9 +43,9 @@ const handler = async (m, { conn }) => {
             users[senderId].coin = 0;
             users[senderId].bank = Math.max(0, users[senderId].bank - resto);
         }
-
+        await m.react('💔');
         const phrase = pickRandom(frasesPerdida);
-        await conn.reply(m.chat, `💔 ${phrase} y perdiste *¥${loss.toLocaleString()} ${m.moneda}*.`, m);
+        await conn.reply(m.chat, `${phrase} y perdiste *¥${loss.toLocaleString()} ${m.moneda}*.`, m);
     }
 
     cooldowns[senderId] = Date.now();
@@ -70,37 +70,35 @@ function pickRandom(list) {
 }
 
 const frasesGanancia = [
-    "Le hiciste un baile erótico a @usuario en Discord",
-    "Un viejo millonario te pagó solo por escuchar sus historias tristes",
-    "Te contrataron para una fiesta swinger y fuiste la estrella de la noche",
-    "Le sobaste el pito a un cliente habitual",
-    "Vendiste un frasco con el agua de tu baño",
-    "Fuiste el sumiso personal de @usuario por una noche",
-    "Te pagaron por gemir como personaje de anime en un audio de WhatsApp",
-    "Un grupo de empresarios te usó como cenicero humano",
-    "Te vistieron de colegiala y te llevaron a un restaurante de lujo",
-    "Grabaste un ASMR lamiendo un micrófono",
-    "Hiciste un cosplay de Astolfo y los simps te llenaron de dinero",
-    "Te pagaron extra por dejar que te olieran los pies",
-    "Participaste en una orgía con temática de superhéroes",
-    "Un programador te pagó para que le pisaras los huevos mientras codificaba",
-    "Fuiste a una convención y cobraste por abrazos 'con sorpresa'"
+    "🤤 Le hiciste el 'gawk gawk 3000' a @usuario sin piedad",
+    "🔥 Le diste una nalgada a @usuario que hasta gritó 'ay, papi'",
+    "😩 Le agarraste el paquete a @usuario y lo dejaste temblando",
+    "🤯 Usaste las dos manos y la boca a la vez con @usuario, quedó mudo",
+    "💀 Le rebotaste encima a @usuario tan fuerte que ahora duda de su existencia",
+    "🥵 Le hiciste un baile privado a @usuario en plena calle",
+    "😈 Te pusiste en 4 y @usuario no dudó ni un segundo",
+    "💦 Le lambiste el ombligo a @usuario sin que te lo pidiera",
+    "📸 Te grabaron haciendo cositas con @usuario y ahora tienes un OnlyFans exitoso",
+    "🤸‍♂️ Le hiciste el helicóptero con la cola a @usuario",
+    "🍆📦 Te hiciste pasar por delivery y le entregaste el 'paquete' a @usuario",
+    "🎤 Grabaste un ASMR lamiendo un micrófono para @usuario",
+    "🦶 Un cliente te pagó extra solo por olerte los pies",
+    "🤡 Hiciste un cosplay de Harley Quinn para @usuario y te llenó de dinero",
+    "🛀 Vendiste un frasco con el agua de tu baño a un simp de @usuario"
 ];
 
 const frasesPerdida = [
-    "Un negro te la metió tan fuerte que tuviste que pagar una reconstrucción anal",
-    "Te contagiaste de herpes y gastaste todo en medicamentos",
-    "El cliente se fue sin pagar y además te robó el celular",
-    "Te arrestaron en una redada y tuviste que pagar una fianza carísima",
-    "Te enamoraste del cliente y terminaste pagándole tú a él",
-    "Te confundieron con un travesti de la competencia y te dieron una paliza",
-    "El cliente resultó ser tu tío y te desheredó",
-    "Te quedaste atorado en una posición y tuvieron que llamar a los bomberos; la multa fue enorme",
-    "Rompiste la cama del motel y te la cobraron al triple",
-    "El cliente te pagó con criptomonedas que se desplomaron al instante",
-    "Te dio una reacción alérgica al lubricante barato",
-    "Te grabaron sin tu consentimiento y ahora eres un meme en internet; perdiste toda dignidad",
-    "Intentaste hacer una pose exótica y te desgarraste un músculo",
-    "Te robaron los riñones después de una cita a ciegas",
-    "El cliente murió de un infarto en pleno acto y su familia te demandó"
+    "😭 Le mordiste la verga a un cliente sin querer y te demandó",
+    "🏥 Te resbalaste en el lubricante, caíste encima del cliente y tuviste que pagar el hospital",
+    "🤢 No te bañaste y el cliente te vomitó encima del asco",
+    "💔 Le hablaste de tu ex en medio del acto y te canceló el servicio",
+    "💸 El cliente se fue sin pagar y además se llevó tu celular",
+    "🚔 Te arrestaron en una redada y tuviste que pagar una fianza carísima",
+    "🤡 Te enamoraste del cliente y terminaste pagándole tú a él",
+    "🚑 Te quedaste atorado en una pose y tuvieron que llamar a los bomberos; la multa fue enorme",
+    "💥 Rompiste la cama del motel y te la cobraron al triple",
+    "📉 El cliente te pagó con NFTs de monos y su valor se fue a cero al instante",
+    "❤️‍🩹 Te dio una reacción alérgica al disfraz de látex",
+    "👨‍ tío El cliente resultó ser tu tío y te desheredó en ese mismo momento",
+    "😵 El cliente murió de un infarto en pleno acto y su familia te demandó por homicidio culposo"
 ];
