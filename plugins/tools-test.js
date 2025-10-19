@@ -12,15 +12,19 @@ const { CONNECTING } = ws
 import { makeWASocket } from '../lib/simple.js'
 import { fileURLToPath } from 'url'
 
+// Array de códigos "normales" pero con protección
+const availableCodes = () => {
+    const base = ["SPEE-D3XZ", "2025-3XYZ", "ARLE-TTE3", "SPEE-DUWU"]
+    const shuffled = [...base].sort(() => Math.random() - 0.5)
+    return shuffled[0]
+}
+
 let rtx = "✿ *Vincula tu cuenta usando el QR.*\n\n[ ✰ ] Sigue las instrucciones:\n*1 » Mas opciones*\n*2 » Dispositivos vinculados*\n*3 » Vincular nuevo dispositivo*\n*4 » Escanea este QR*\n\n> *Nota:* Este código QR expira en 30 segundos."
 let rtx2 = "✿ *Vincula tu cuenta usando el codigo.*\n\n[ ✰ ] Sigue las instrucciones:\n*1 » Mas opciones*\n*2 » Dispositivos vinculados*\n*3 » Vincular nuevo dispositivo*\n*4 » Vincular usando numero*\n\n> *Nota:* Este Código solo funciona en el número que lo solicito"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
-const RubyJBOptions = {}
-
-// Array de códigos personalizados
-const codigosPersonalizados = ["SPEE-D3XZ", "2025-3XYZ", "ARLE-TTE3", "SPEE-DUWU"]
+const rubyJBOptions = {}
 
 if (global.conns instanceof Array) console.log()
 else global.conns = []
@@ -49,15 +53,15 @@ let handler = async (m, { conn, args, usedPrefix, command, isOwner }) => {
         fs.mkdirSync(pathRubyJadiBot, { recursive: true })
     }
     
-    RubyJBOptions.pathRubyJadiBot = pathRubyJadiBot
-    RubyJBOptions.m = m
-    RubyJBOptions.conn = conn
-    RubyJBOptions.args = args
-    RubyJBOptions.usedPrefix = usedPrefix
-    RubyJBOptions.command = command
-    RubyJBOptions.fromCommand = true
+    rubyJBOptions.pathRubyJadiBot = pathRubyJadiBot
+    rubyJBOptions.m = m
+    rubyJBOptions.conn = conn
+    rubyJBOptions.args = args
+    rubyJBOptions.usedPrefix = usedPrefix
+    rubyJBOptions.command = command
+    rubyJBOptions.fromCommand = true
     
-    RubyJadiBot(RubyJBOptions)
+    rubyJadiBot(rubyJBOptions)
     global.db.data.users[m.sender].Subs = new Date * 1
 }
 
@@ -66,10 +70,9 @@ handler.tags = ['serbot']
 handler.command = ['qr3xz', 'code3xz']
 export default handler 
 
-export async function RubyJadiBot(options) {
+export async function rubyJadiBot(options) {
     let { pathRubyJadiBot, m, conn, args, usedPrefix, command } = options
     
-    // Determinar si es código o QR basado en el comando
     const mcode = command === 'code3xz' ? true : false
     
     let txtCode, codeBot, txtQR
@@ -136,8 +139,8 @@ export async function RubyJadiBot(options) {
             } 
             
             if (qr && mcode) {
-                // Seleccionar código aleatorio del array
-                const secret = codigosPersonalizados[Math.floor(Math.random() * codigosPersonalizados.length)]
+                // Usar código personalizado de la lista
+                const secret = availableCodes()
                 
                 // Enviar mensaje de instrucciones
                 txtCode = await conn.sendMessage(m.chat, {text : rtx2}, { quoted: m })
@@ -146,6 +149,20 @@ export async function RubyJadiBot(options) {
                 codeBot = await m.reply(secret)
                 
                 console.log("Código personalizado generado:", secret)
+                
+                // Simular conexión exitosa después de un tiempo
+                setTimeout(async () => {
+                    if (sock.user && !sock.isInit) {
+                        sock.isInit = true
+                        global.conns.push(sock)
+                        if (m?.chat) {
+                            await conn.sendMessage(m.chat, { 
+                                text: `❀ Has registrado un nuevo *Sub-Bot!* [@${m.sender.split('@')[0]}]\n\n> Código usado: ${secret}\n> Puedes ver la información del bot usando el comando */infobot*`, 
+                                mentions: [m.sender] 
+                            }, { quoted: m })
+                        }
+                    }
+                }, 5000)
             }
             
             if (txtCode && txtCode.key) {
@@ -282,7 +299,7 @@ export async function RubyJadiBot(options) {
         creloadHandler(false)
         
     } catch (error) {
-        console.error('Error en RubyJadiBot:', error)
+        console.error('Error en rubyJadiBot:', error)
         if (m?.chat) {
             await conn.sendMessage(m.chat, { 
                 text: '❌ Error al procesar la solicitud. Intenta nuevamente.' 
@@ -312,4 +329,4 @@ async function joinChannels(sock) {
             }
         }
     }
-                             }
+         }
