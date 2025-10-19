@@ -1,13 +1,7 @@
-```javascript
 import fetch from "node-fetch"
 import yts from "yt-search"
-import fs from "fs"
-import path from "path"
-import ffmpeg from "fluent-ffmpeg"
-import { pipeline } from "stream"
-import { promisify } from "util"
 
-const streamPipe = promisify(pipeline)
+const youtubeRegexID = /(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([a-zA-Z0-9_-]{11})/
 
 const API_BASE = "https://api-sky.ultraplus.click"
 const API_KEY = "Russellxz"
@@ -34,16 +28,6 @@ async function skyYT(url, format) {
   return data.data
 }
 
-async function downloadToFile(url, filePath) {
-  const res = await fetch(url)
-  if (!res.ok) throw new Error(`Download failed: ${res.status}`)
-  
-  const fileStream = fs.createWriteStream(filePath)
-  const body = res.body
-  await streamPipe(body, fileStream)
-  return filePath
-}
-
 const handler = async (m, { conn, text, command }) => {
   try {
     if (!text.trim()) {
@@ -52,7 +36,6 @@ const handler = async (m, { conn, text, command }) => {
 
     await conn.sendMessage(m.chat, { react: { text: "⏳", key: m.key }})
 
-    const youtubeRegexID = /(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([a-zA-Z0-9_-]{11})/
     let videoIdToFind = text.match(youtubeRegexID) || null
     let ytplay2 = await yts(videoIdToFind ? "https://youtu.be/" + videoIdToFind[1] : text)
 
@@ -115,45 +98,12 @@ const handler = async (m, { conn, text, command }) => {
       return conn.reply(m.chat, "✦ No se pudo descargar el audio. Intenta más tarde.", m)
     }
 
-    const tmp = path.join(process.cwd(), 'tmp')
-    if (!fs.existsSync(tmp)) fs.mkdirSync(tmp, { recursive: true })
-
-    const urlPath = new URL(audioData.link).pathname || ""
-    const ext = (urlPath.split(".").pop() || "bin").toLowerCase()
-    const isMp3 = ext === "mp3"
-
-    const inFile = path.join(tmp, `${Date.now()}_in.${ext}`)
-    await downloadToFile(audioData.link, inFile)
-
-    let outFile = inFile
-    if (!isMp3) {
-      const tryOut = path.join(tmp, `${Date.now()}_out.mp3`)
-      try {
-        await new Promise((resolve, reject) =>
-          ffmpeg(inFile)
-            .audioCodec("libmp3lame")
-            .audioBitrate("128k")
-            .format("mp3")
-            .save(tryOut)
-            .on("end", resolve)
-            .on("error", reject)
-        )
-        outFile = tryOut
-        try { fs.unlinkSync(inFile) } catch {}
-      } catch {
-        outFile = inFile
-      }
-    }
-
-    const buffer = fs.readFileSync(outFile)
     await conn.sendMessage(m.chat, {
-      audio: buffer,
-      fileName: `${audioData.title}.mp3`,
+      audio: { url: audioData.link },
+      fileName: `${audioData.title || "music"}.mp3`,
       mimetype: "audio/mpeg",
       ptt: false
     }, { quoted: m })
-
-    try { fs.unlinkSync(outFile) } catch {}
 
     await conn.sendMessage(m.chat, { react: { text: "✅", key: m.key }})
 
