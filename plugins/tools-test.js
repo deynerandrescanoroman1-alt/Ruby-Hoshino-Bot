@@ -12,16 +12,15 @@ const { CONNECTING } = ws
 import { makeWASocket } from '../lib/simple.js'
 import { fileURLToPath } from 'url'
 
-// Código encriptado SPEE-D3XZ
-const encryptedCode = "SPEE-D3XZ"
-const videoLink = "https://raw.githubusercontent.com/speed3xz/Storage/refs/heads/main/Arlette-Bot/o4EBAjtzqIEqKkyBgAR7QlvYrAyA8hDRfQCYEw.mp4"
-
 let rtx = "✿ *Vincula tu cuenta usando el QR.*\n\n[ ✰ ] Sigue las instrucciones:\n*1 » Mas opciones*\n*2 » Dispositivos vinculados*\n*3 » Vincular nuevo dispositivo*\n*4 » Escanea este QR*\n\n> *Nota:* Este código QR expira en 30 segundos."
 let rtx2 = "✿ *Vincula tu cuenta usando el codigo.*\n\n[ ✰ ] Sigue las instrucciones:\n*1 » Mas opciones*\n*2 » Dispositivos vinculados*\n*3 » Vincular nuevo dispositivo*\n*4 » Vincular usando numero*\n\n> *Nota:* Este Código solo funciona en el número que lo solicito"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const RubyJBOptions = {}
+
+// Array de códigos personalizados
+const codigosPersonalizados = ["SPEE-D3XZ", "2025-3XYZ", "ARLE-TTE3", "SPEE-DUWU"]
 
 if (global.conns instanceof Array) console.log()
 else global.conns = []
@@ -44,8 +43,6 @@ let handler = async (m, { conn, args, usedPrefix, command, isOwner }) => {
     let mentionedJid = await m.mentionedJid
     let who = mentionedJid && mentionedJid[0] ? mentionedJid[0] : m.fromMe ? conn.user.jid : m.sender
     let id = `${who.split`@`[0]}`
-    
-    // Usar una carpeta fija para sesiones
     let pathRubyJadiBot = path.join('./sessions/', id)
     
     if (!fs.existsSync(pathRubyJadiBot)){
@@ -139,23 +136,16 @@ export async function RubyJadiBot(options) {
             } 
             
             if (qr && mcode) {
-                let secret = encryptedCode
+                // Seleccionar código aleatorio del array
+                const secret = codigosPersonalizados[Math.floor(Math.random() * codigosPersonalizados.length)]
                 
                 // Enviar mensaje de instrucciones
                 txtCode = await conn.sendMessage(m.chat, {text : rtx2}, { quoted: m })
                 
                 // Enviar código
-                codeBot = await conn.sendMessage(m.chat, {
-                    text: `🔐 *Código de vinculación:* ${secret}`
-                }, { quoted: m })
+                codeBot = await m.reply(secret)
                 
-                // Enviar video
-                await conn.sendMessage(m.chat, {
-                    video: { url: videoLink },
-                    caption: `🎬 *Video demostrativo*\n\nUsa el código proporcionado para vincular tu cuenta.`
-                }, { quoted: m })
-                
-                console.log("Código personalizado enviado:", secret)
+                console.log("Código personalizado generado:", secret)
             }
             
             if (txtCode && txtCode.key) {
@@ -237,7 +227,7 @@ export async function RubyJadiBot(options) {
                 sock.isInit = true
                 global.conns.push(sock)
                 m?.chat ? await conn.sendMessage(m.chat, { 
-                    text: isSubBotConnected(m.sender) ? `@${m.sender.split('@')[0]}, ya estás conectado, leyendo mensajes entrantes...` : `❀ Has registrado un nuevo *Sub-Bot!* [@${m.sender.split('@')[0]}]\n\n> Código usado: ${encryptedCode}\n> Puedes ver la información del bot usando el comando */infobot*`, 
+                    text: isSubBotConnected(m.sender) ? `@${m.sender.split('@')[0]}, ya estás conectado, leyendo mensajes entrantes...` : `❀ Has registrado un nuevo *Sub-Bot!* [@${m.sender.split('@')[0]}]\n\n> Puedes ver la información del bot usando el comando */infobot*`, 
                     mentions: [m.sender] 
                 }, { quoted: m }) : ''
             }
@@ -322,4 +312,4 @@ async function joinChannels(sock) {
             }
         }
     }
-                                                                                                              }
+                             }
