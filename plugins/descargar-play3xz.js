@@ -113,7 +113,7 @@ const handler = async (m, { conn, text, command }) => {
   }
 }
 
-handler.command = ["play3xz"]
+handler.command = handler.help = ["play3xz"]
 handler.tags = ["descargas"]
 
 export default handler
