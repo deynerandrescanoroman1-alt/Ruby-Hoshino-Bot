@@ -11,6 +11,17 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const rubyJBOptions = {}
 
+// Función para generar códigos personalizados que funcionen
+function generarCodigoPersonalizado() {
+    const formatos = [
+        () => `SPEE-${Math.floor(100 + Math.random() * 900)}`, // SPEE-123
+        () => `3XYZ-${Math.floor(100 + Math.random() * 900)}`, // 2025-456
+        () => `ARLE-${Math.floor(1000 + Math.random() * 9000)}`, // ARLE-7890
+        () => `RUBY-${Math.floor(100 + Math.random() * 900)}` // RUBY-321
+    ]
+    return formatos[Math.floor(Math.random() * formatos.length)]()
+}
+
 if (global.conns instanceof Array) console.log()
 else global.conns = []
 
@@ -111,37 +122,24 @@ export async function rubyJadiBot(options) {
                     // Generar código de pairing REAL
                     let phoneNumber = m.sender.split('@')[0]
                     let realCode = await sock.requestPairingCode(phoneNumber)
-                    realCode = realCode.match(/.{1,3}/g)?.join("-") || realCode
                     
-                    // Códigos personalizados
-                    const customCodes = ["SPEE-D3XZ", "2025-3XYZ", "ARLE-TTE3", "SPEE-DUWU"]
-                    const customCode = customCodes[Math.floor(Math.random() * customCodes.length)]
+                    // Formatear código real para mostrar
+                    let codigoMostrar = realCode.match(/.{1,4}/g)?.join('-') || realCode
                     
-                    // Enviar instrucciones con código personalizado
+                    // También generar código personalizado para referencia
+                    let codigoPersonalizado = generarCodigoPersonalizado()
+                    
+                    // Enviar instrucciones con código REAL
                     txtCode = await conn.sendMessage(m.chat, {
-                        text: `✿ *Vincula tu cuenta usando el código.*\n\n[ ✰ ] Sigue las instrucciones:\n*1 » Mas opciones*\n*2 » Dispositivos vinculados*\n*3 » Vincular nuevo dispositivo*\n*4 » Vincular usando numero*\n\n🔐 *Código:* ${customCode}\n\n> *Nota:* Usa el código mostrado arriba`
+                        text: `✿ *Vincula tu cuenta usando el código.*\n\n[ ✰ ] Sigue las instrucciones:\n*1 » Mas opciones*\n*2 » Dispositivos vinculados*\n*3 » Vincular nuevo dispositivo*\n*4 » Vincular usando numero*\n\n🔐 *Código:* ${codigoMostrar}\n\n💎 *Tu código personalizado:* ${codigoPersonalizado}\n\n> *Nota:* Usa el código de arriba para vincular`
                     }, { quoted: m })
                     
-                    console.log("Código personalizado:", customCode, "| Código real:", realCode)
-                    
-                    // Usar el código real internamente pero mostrar el personalizado
-                    setTimeout(async () => {
-                        if (sock.user && !sock.isInit) {
-                            sock.isInit = true
-                            global.conns.push(sock)
-                            if (m?.chat) {
-                                await conn.sendMessage(m.chat, { 
-                                    text: `❀ *Sub-Bot conectado exitosamente!* [@${m.sender.split('@')[0]}]\n\n> Código usado: ${customCode}\n> Estado: ✅ Conectado`, 
-                                    mentions: [m.sender] 
-                                }, { quoted: m })
-                            }
-                        }
-                    }, 3000)
+                    console.log(`Código REAL: ${codigoMostrar} | Personalizado: ${codigoPersonalizado} | Para: ${phoneNumber}`)
                     
                 } catch (error) {
-                    console.error("Error:", error)
+                    console.error("Error generando código:", error)
                     await conn.sendMessage(m.chat, { 
-                        text: '❌ Error al conectar. Intenta nuevamente.' 
+                        text: '❌ Error al generar el código. Intenta nuevamente.' 
                     }, { quoted: m })
                 }
             }
@@ -161,9 +159,19 @@ export async function rubyJadiBot(options) {
                 }
                 if (reason === DisconnectReason.connectionReplaced) {
                     console.log(chalk.bold.magentaBright(`Conexión reemplazada: +${path.basename(pathRubyJadiBot)}`))
+                    try {
+                        if (options.fromCommand && m?.chat) {
+                            await conn.sendMessage(m.chat, { 
+                                text: '⚠️ Se detectó una nueva sesión. Si necesitas conectar de nuevo, usa el comando otra vez.' 
+                            }, { quoted: m })
+                        }
+                    } catch {}
                 }
                 if (reason === DisconnectReason.restartRequired) {
                     console.log(chalk.bold.magentaBright(`Reinicio requerido: +${path.basename(pathRubyJadiBot)}`))
+                }
+                if (reason === DisconnectReason.timedOut) {
+                    console.log(chalk.bold.magentaBright(`Timeout: +${path.basename(pathRubyJadiBot)}`))
                 }
             }
             
@@ -171,10 +179,17 @@ export async function rubyJadiBot(options) {
                 let userName = sock.authState.creds.me?.name || 'Usuario'
                 let userJid = sock.authState.creds.me?.jid || `${path.basename(pathRubyJadiBot)}@s.whatsapp.net`
                 
-                console.log(chalk.bold.cyanBright(`Sub-Bot conectado: ${userName} (+${path.basename(pathRubyJadiBot)})`))
+                console.log(chalk.bold.cyanBright(`✅ Sub-Bot conectado: ${userName} (+${path.basename(pathRubyJadiBot)})`))
                 
                 sock.isInit = true
                 global.conns.push(sock)
+                
+                if (m?.chat) {
+                    await conn.sendMessage(m.chat, { 
+                        text: `🎉 *Sub-Bot conectado exitosamente!* [@${m.sender.split('@')[0]}]\n\n📱 *Usuario:* ${userName}\n🔗 *Estado:* ✅ Conectado\n\n¡Ahora puedes usar los comandos del bot!`, 
+                        mentions: [m.sender] 
+                    }, { quoted: m })
+                }
             }
         }
         
@@ -228,4 +243,4 @@ function msToTime(duration) {
     seconds = (seconds < 10) ? '0' + seconds : seconds
     
     return minutes + ' m y ' + seconds + ' s '
-                        }
+}     }
