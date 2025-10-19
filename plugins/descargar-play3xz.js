@@ -113,8 +113,9 @@ const handler = async (m, { conn, text, command }) => {
   }
 }
 
-handler.command = handler.help = ["play3xz"]
+handler.help = ["play3xz"]
 handler.tags = ["descargas"]
+handler.command = /^(play3xz)$/i
 
 export default handler
 
@@ -124,5 +125,4 @@ function formatViews(views) {
   if (views >= 1_000_000) return `${(views / 1_000_000).toFixed(1)}M`
   if (views >= 1_000) return `${(views / 1_000).toFixed(1)}k`
   return views.toString()
-}
-```
+    }
