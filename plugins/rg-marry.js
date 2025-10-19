@@ -1,22 +1,29 @@
-/* Código hecho por Destroy, adaptado y mejorado por ChatGPT
- - https://github.com/The-King-Destroy
- - Créditos respetados.
+/* Código original de Destroy, adaptado y mejorado.
 */
 
 import fs from 'fs';
 import path from 'path';
 
-const marriagesFile = path.resolve('src/database/casados.json');
+const marriagesFile = path.resolve('src/database/casados.json'); 
 let proposals = {}; 
 let marriages = loadMarriages();
 const confirmation = {};
 
 function loadMarriages() {
-    return fs.existsSync(marriagesFile) ? JSON.parse(fs.readFileSync(marriagesFile, 'utf8')) : {};
+    try {
+        return fs.existsSync(marriagesFile) ? JSON.parse(fs.readFileSync(marriagesFile, 'utf8')) : {};
+    } catch (e) {
+        console.error("Error al cargar casados.json:", e);
+        return {};
+    }
 }
 
 function saveMarriages() {
-    fs.writeFileSync(marriagesFile, JSON.stringify(marriages, null, 2));
+    try {
+        fs.writeFileSync(marriagesFile, JSON.stringify(marriages, null, 2));
+    } catch (e) {
+        console.error("Error al guardar casados.json:", e);
+    }
 }
 
 const handler = async (m, { conn, command }) => {
@@ -34,19 +41,47 @@ const handler = async (m, { conn, command }) => {
                 if (userIsMarried(proposer)) {
                     return await conn.reply(m.chat, `《✧》 Ya estás casado con *${conn.getName(marriages[proposer].partner)}*\n> Puedes divorciarte con el comando: *#divorce*`, m);
                 } else {
-                    throw new Error('Debes mencionar a alguien para aceptar o proponer matrimonio.\n> Ejemplo » *#marry @Usuario*');
+                    throw new Error('Debes mencionar a alguien para aceptar o proponer matrimonio.\n> *Ejemplo:* #marry @Usuario');
                 }
             }
-
+            
             if (userIsMarried(proposer)) throw new Error(`Ya estás casado con ${conn.getName(marriages[proposer].partner)}.`);
             if (userIsMarried(proposee)) throw new Error(`${conn.getName(proposee)} ya está casado con ${conn.getName(marriages[proposee].partner)}.`);
             if (proposer === proposee) throw new Error('¡No puedes proponerte matrimonio a ti mismo!');
+            if (confirmation[proposee]) throw new Error(`Esa persona ya tiene una propuesta de matrimonio pendiente.`)
 
             proposals[proposer] = proposee;
             const proposerName = conn.getName(proposer);
             const proposeeName = conn.getName(proposee);
-            const confirmationMessage = `♡ ${proposerName} te ha propuesto matrimonio, ${proposeeName} 💍\n\n¿Aceptas? •(=^●ω●^=)•\n\n*Debes responder con:*\n> ✐ "Si" para aceptar 💞\n> ✐ "No" para rechazar 💔`;
-            await conn.reply(m.chat, confirmationMessage, m, { mentions: [proposee, proposer] });
+
+
+            const confirmationMessage = `♡ ${proposerName} te ha propuesto matrimonio, ${proposeeName} 💍\n\n¿Aceptas? •(=^●ω●^=)•`;
+
+            const buttons = [
+                { buttonId: 'marry_accept', buttonText: { displayText: 'Sí, acepto 💞' }, type: 1 },
+                { buttonId: 'marry_reject', buttonText: { displayText: 'No, gracias 💔' }, type: 1 }
+            ];
+
+            const fkont = {
+                key: {
+                    fromMe: false,
+                    participant: '0@s.whatsapp.net',
+                    remoteJid: 'status@broadcast'
+                },
+                message: {
+                    "contactMessage": {
+                        "displayName": "💍 PROPUESTA DE MATRIMONIO 💍",
+                        "vcard": "BEGIN:VCARD\nVERSION:3.0\nN:;Test;;;\nFN:Test\nORG:Test\nTITLE:\nTEL;type=CELL;type=VOICE;waid=0:+0\nEND:VCARD"
+                    }
+                }
+            };
+
+            await conn.sendMessage(m.chat, {
+                text: confirmationMessage,
+                buttons: buttons,
+                footer: 'Tienes 60 segundos para responder',
+                mentions: [proposee, proposer]
+            }, { quoted: fkont });
 
             confirmation[proposee] = {
                 proposer,
@@ -76,19 +111,21 @@ const handler = async (m, { conn, command }) => {
 
 handler.before = async (m, { conn }) => {
     if (m.isBaileys) return;
+    
     if (!(m.sender in confirmation)) return;
-    if (!m.text) return;
+    
+    if (!m.text) return; 
 
-    const respuesta = m.text.trim().toLowerCase();
+    const respuesta = m.text.trim();
     const { proposer, timeout } = confirmation[m.sender];
 
-    if (respuesta === 'no') {
+    if (respuesta === 'marry_reject') {
         clearTimeout(timeout);
         delete confirmation[m.sender];
-        return conn.sendMessage(m.chat, { text: `《✧》 ${conn.getName(m.sender)} ha rechazado la propuesta de matrimonio 💔` }, { quoted: m });
+        return conn.sendMessage(m.chat, { text: `《✧》 ${conn.getName(m.sender)} ha rechazado la propuesta de matrimonio 💔` }, { quoted: m, mentions: [m.sender, proposer] });
     }
 
-    if (respuesta === 'si' || respuesta === 'sí') {
+    if (respuesta === 'marry_accept') {
         clearTimeout(timeout);
         delete confirmation[m.sender];
         delete proposals[proposer];
