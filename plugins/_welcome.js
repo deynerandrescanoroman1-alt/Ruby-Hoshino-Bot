@@ -42,20 +42,21 @@ caption = chat.welcomeText
 .replace(/@subject/g, groupMetadata.subject)
 .replace(/@desc/g, desc);
 } else {
-.replace(/@user/g, username)
-.replace(/@subject/g, groupMetadata.subject);
-caption = `𝆺𝅥 𝆭    ִ ֗ 𝆺𝅥 𝆭    ִ ֗ 𝆺𝅥 𝆭    ִ ֗ 𝆺𝅥 𝆭    ִ ֗ 𝆺𝅥 𝆭  𝆺𝅥 𝆭    ִ ֗ 𝆺𝅥 𝆭    ִ ֗ 𝆺𝅥 𝆭𝆺𝅥 𝆭    ִ ֗ 𝆺𝅥 𝆭    ִ ֗ 𝆺𝅥 𝆭    ִ ֗ 𝆺𝅥 𝆭    ִ ֗ 𝆺𝅥 𝆭  𝆺𝅥 𝆭    ִ ֗ 𝆺𝅥 𝆭    ִ ֗ 𝆺𝅥 𝆭𝆺𝅥 
+const defaultWelcomeMessage = `𝆺𝅥 𝆭    ִ ֗ 𝆺𝅥 𝆭    ִ ֗ 𝆺𝅥 𝆭    ִ ֗ 𝆺𝅥 𝆭    ִ ֗ 𝆺𝅥 𝆭  𝆺𝅥 𝆭    ִ ֗ 𝆺𝅥 𝆭    ִ ֗ 𝆺𝅥 𝆭𝆺𝅥 𝆭    ִ ֗ 𝆺𝅥 𝆭    ִ ֗ 𝆺𝅥 𝆭    ִ ֗ 𝆺𝅥 𝆭    ִ ֗ 𝆺𝅥 𝆭  𝆺𝅥 𝆭    ִ ֗ 𝆺𝅥 𝆭    ִ ֗ 𝆺𝅥 𝆭𝆺𝅥 
 𝙃𝙤𝙡𝙖, @user! ✨\n𝘽𝙄𝙀𝙉𝙑𝙀𝙉𝙄𝘿𝙊/𝘼@ 𝘼𝙇 𝙂𝙍𝙐𝙋𝙊:\n *@subject* \n\n¡𝙀𝙨𝙥𝙚𝙧𝙖𝙢𝙤𝙨 𝙦𝙪𝙚 𝙙𝙞𝙨𝙛𝙧𝙪𝙩𝙚𝙨 𝙩𝙪 𝙚𝙨𝙩𝙖𝙙𝙞𝙖! 💖
 
-.   ͜ ︵𝅽◌⃘࣪۟୭۪۪ׄꪆ 漢̸𝅮 ◌⃘࣪۟୭۪۪ׄꪆ︵ ͜    .
+.   ͜ ︵𝅽◌⃘࣪۟୭۪۪ׄꪆ 漢̸𝅮 ◌⃘࣪۟୭۪۪ׄꪆ︵ ͜    .
 「 𝐈𝐍𝐅𝐎 𝐃𝐄𝐋 𝐆𝐑𝐔𝐏𝐎 」
-.ֶָ֢❀⃝🪷  *𝙈𝙞𝙚𝙢𝙗𝙧𝙤𝙨:* ${groupSize}
-.ֶָ֢❀⃝🪷  *𝙁𝙚𝙘𝙝𝙖:* ${fecha}
+.ֶָ֢❀⃝🪷  *𝙈𝙞𝙚𝙢𝙗𝙧𝙤𝙨:* ${groupSize}
+.ֶָ֢❀⃝🪷  *𝙁𝙚𝙘𝙝𝙖:* ${fecha}
 
 ㅤ  ㅤׄ ׅ ׄ ⋱＼ ׄ   ׅ ⡇ ׅ ׄ   ／⋰ ׄ   ׅ ׄ
 > ᴘᴜᴇᴅᴇs crear un mensaje de bienvenida
 > ᴜsᴀɴᴅᴏ: *#setwelcome*
 ㅤ ︶ ྀི◟ ͜◞˚̣̣̣  ⋰ ⫶ ⋱    ˚̣̣̣◟ ͜◞ ྀི︶`;
+caption = defaultWelcomeMessage
+.replace(/@user/g, username)
+.replace(/@subject/g, groupMetadata.subject);
 }
 return { pp, caption, mentions: [userId] };
 }
@@ -70,9 +71,7 @@ caption = chat.byeText
 .replace(/@user/g, username)
 .replace(/@subject/g, groupMetadata.subject);
 } else {
-.replace(/@user/g, username)
-.replace(/@subject/g, groupMetadata.subject);
-caption = `૮꒰ී ◞ ◟ ꒱ა 𝙃𝙖𝙨𝙩𝙖 𝙋𝙧𝙤𝙣𝙩𝙤.. 
+const defaultByeMessage = `૮꒰ී ◞ ◟ ꒱ა 𝙃𝙖𝙨𝙩𝙖 𝙋𝙧𝙤𝙣𝙩𝙤.. 
 
 𓍯 ꒰ 𝙎𝙀 𝙃𝘼 𝙄𝘿𝙊 @user ꒱ 🌸
 𝘿𝙚𝙡 𝙂𝙍𝙐𝙋𝙊 *@subject* 𝗣𝗔𝗥𝗔 𝗩𝗘𝗥 𝗢𝗦𝗛𝗜 𝗡𝗢 𝗞𝗢 
@@ -82,6 +81,9 @@ caption = `૮꒰ී ◞ ◟ ꒱ა 𝙃𝙖𝙨𝙩𝙖 𝙋𝙧𝙤𝙣𝙩�
 
 > ᴘᴜᴇᴅᴇs ᴄʀᴇᴀʀ ᴜɴ ᴍᴇɴsᴀᴊᴇ ᴅᴇ ᴅᴇsᴘᴇᴅɪᴅᴀ
 > ᴜsᴀɴᴅᴏ: *#setbye*`;
+caption = defaultByeMessage
+.replace(/@user/g, username)
+.replace(/@subject/g, groupMetadata.subject);
 }
 return { pp, caption, mentions: [userId] };
 }
@@ -93,7 +95,7 @@ if (!chat) return !0;
 const primaryBot = chat.botPrimario
 if (primaryBot && conn.user.jid !== primaryBot) return !0
 const userId = m.messageStubParameters[0]
-if (chat.welcome && m.messageStubType == WAMessageStubType.GROUP_PARTICIPANT_ADD) {
+if (chat.welcome && m.messageStubType == WAMessageStubType.GROUP_PARTICNPMIPANT_ADD) {
 const { pp, caption, mentions } = await generarBienvenida({ conn, userId, groupMetadata, chat })
 const contextInfo = {
 mentionedJid: mentions,
