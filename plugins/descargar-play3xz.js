@@ -1,3 +1,4 @@
+```javascript
 import fetch from "node-fetch"
 import yts from "yt-search"
 import fs from "fs"
@@ -100,67 +101,61 @@ const handler = async (m, { conn, text, command }) => {
       }
     })
 
-    if (["play3xz"].includes(command)) {
-      let audioData = null
+    let audioData = null
+    try {
+      const d = await skyYT(url, "audio")
+      const mediaUrl = d.audio || d.video
+      if (mediaUrl) {
+        audioData = { link: mediaUrl, title: d.title || title }
+      }
+    } catch {}
+
+    if (!audioData) {
+      await conn.sendMessage(m.chat, { react: { text: "❌", key: m.key }})
+      return conn.reply(m.chat, "✦ No se pudo descargar el audio. Intenta más tarde.", m)
+    }
+
+    const tmp = path.join(process.cwd(), 'tmp')
+    if (!fs.existsSync(tmp)) fs.mkdirSync(tmp, { recursive: true })
+
+    const urlPath = new URL(audioData.link).pathname || ""
+    const ext = (urlPath.split(".").pop() || "bin").toLowerCase()
+    const isMp3 = ext === "mp3"
+
+    const inFile = path.join(tmp, `${Date.now()}_in.${ext}`)
+    await downloadToFile(audioData.link, inFile)
+
+    let outFile = inFile
+    if (!isMp3) {
+      const tryOut = path.join(tmp, `${Date.now()}_out.mp3`)
       try {
-        const d = await skyYT(url, "audio")
-        const mediaUrl = d.audio || d.video
-        if (mediaUrl) {
-          audioData = { link: mediaUrl, title: d.title || title }
-        }
-      } catch {}
-
-      if (!audioData) {
-        await conn.sendMessage(m.chat, { react: { text: "❌", key: m.key }})
-        return conn.reply(m.chat, "✦ No se pudo descargar el audio. Intenta más tarde.", m)
+        await new Promise((resolve, reject) =>
+          ffmpeg(inFile)
+            .audioCodec("libmp3lame")
+            .audioBitrate("128k")
+            .format("mp3")
+            .save(tryOut)
+            .on("end", resolve)
+            .on("error", reject)
+        )
+        outFile = tryOut
+        try { fs.unlinkSync(inFile) } catch {}
+      } catch {
+        outFile = inFile
       }
-
-      const tmp = path.join(process.cwd(), 'tmp')
-      if (!fs.existsSync(tmp)) fs.mkdirSync(tmp, { recursive: true })
-
-      const urlPath = new URL(audioData.link).pathname || ""
-      const ext = (urlPath.split(".").pop() || "bin").toLowerCase()
-      const isMp3 = ext === "mp3"
-
-      const inFile = path.join(tmp, `${Date.now()}_in.${ext}`)
-      await downloadToFile(audioData.link, inFile)
-
-      let outFile = inFile
-      if (!isMp3) {
-        const tryOut = path.join(tmp, `${Date.now()}_out.mp3`)
-        try {
-          await new Promise((resolve, reject) =>
-            ffmpeg(inFile)
-              .audioCodec("libmp3lame")
-              .audioBitrate("128k")
-              .format("mp3")
-              .save(tryOut)
-              .on("end", resolve)
-              .on("error", reject)
-          )
-          outFile = tryOut
-          try { fs.unlinkSync(inFile) } catch {}
-        } catch {
-          outFile = inFile
-        }
-      }
-
-      const buffer = fs.readFileSync(outFile)
-      await conn.sendMessage(m.chat, {
-        audio: buffer,
-        fileName: `${audioData.title}.mp3`,
-        mimetype: "audio/mpeg",
-        ptt: false
-      }, { quoted: m })
-
-      try { fs.unlinkSync(outFile) } catch {}
-
-      await conn.sendMessage(m.chat, { react: { text: "✅", key: m.key }})
     }
 
-    else {
-      return conn.reply(m.chat, "✧︎ Comando no válido, revisa el menú.", m)
-    }
+    const buffer = fs.readFileSync(outFile)
+    await conn.sendMessage(m.chat, {
+      audio: buffer,
+      fileName: `${audioData.title}.mp3`,
+      mimetype: "audio/mpeg",
+      ptt: false
+    }, { quoted: m })
+
+    try { fs.unlinkSync(outFile) } catch {}
+
+    await conn.sendMessage(m.chat, { react: { text: "✅", key: m.key }})
 
   } catch (error) {
     await conn.sendMessage(m.chat, { react: { text: "❌", key: m.key }})
@@ -168,7 +163,7 @@ const handler = async (m, { conn, text, command }) => {
   }
 }
 
-handler.command = handler.help = ["play3xz"]
+handler.command = ["play3xz"]
 handler.tags = ["descargas"]
 
 export default handler
