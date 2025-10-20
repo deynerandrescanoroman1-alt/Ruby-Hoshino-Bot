@@ -13,13 +13,13 @@ async function handler(m, { conn, args, usedPrefix, command, participants }) {
   let senderJid = m.sender;
   if (m.sender.endsWith('@lid') && m.isGroup) {
     const pInfo = participants.find(p => p.lid === m.sender);
-    if (pInfo && pInfo.jid) senderJid = pInfo.jid;
+    if (pInfo && pInfo.id) senderJid = pInfo.id; 
   }
 
   let targetJid = who;
   if (who.endsWith('@lid') && m.isGroup) {
     const pInfo = participants.find(p => p.lid === who);
-    if (pInfo && pInfo.jid) targetJid = pInfo.jid;
+    if (pInfo && pInfo.id) targetJid = pInfo.id; 
   }
 
   const amountText = args.find(arg => !arg.startsWith('@') && isNumber(arg));
@@ -49,7 +49,6 @@ async function handler(m, { conn, args, usedPrefix, command, participants }) {
   global.db.data.users[targetJid][type] += count;
 
   const mentionText = `@${who.split('@')[0]}`;
-
   m.reply(`✅ ¡𝗍rᥲᥒsFᥱrᥱᥒᥴіᥲ ᥱ᥊і𝗍᥆sᥲ!\n\n› һᥲs ᥱᥒ᥎іᥲძ᥆ *${count.toLocaleString()} ${m.moneda}* ᥲ ${mentionText}.\n› 𝗍ᥱ 𝗊ᥙᥱძᥲᥒ *${user[bankType].toLocaleString()} ${m.moneda}* en el banco.`, null, { mentions: [who] });
 }
 
@@ -58,12 +57,8 @@ handler.tags = ['rpg'];
 handler.command = ['pay', 'transfer'];
 handler.group = true;
 handler.register = true;
-
 export default handler;
-
 function isNumber(x) {
-  if (typeof x === 'string') {
-    x = x.trim();
-  }
+  if (typeof x === 'string') { x = x.trim(); }
   return !isNaN(x) && x !== '';
 }
