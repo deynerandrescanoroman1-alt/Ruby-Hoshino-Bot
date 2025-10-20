@@ -9,20 +9,20 @@ let handler = async (m, { conn, usedPrefix, participants }) => {
 
     if (who == conn.user.jid) return m.react('✖️')
 
-    let primaryJid = who;
+    let primaryJid = who; 
     if (who.endsWith('@lid') && m.isGroup) {
         const participantInfo = participants.find(p => p.lid === who);
-        if (participantInfo && participantInfo.jid) {
-            primaryJid = participantInfo.jid;
+        
+        if (participantInfo && participantInfo.id) { 
+            primaryJid = participantInfo.id;
         }
     }
-
 
     if (!(primaryJid in global.db.data.users)) 
         return m.reply(`${emoji} *El usuario no se encuentra en mi base de datos.*`)
 
-    let user = global.db.data.users[primaryJid]
-    let nombre = await conn.getName(primaryJid)
+    let user = global.db.data.users[primaryJid] 
+    let nombre = await conn.getName(primaryJid) 
 
     let coin = (user.coin || 0).toLocaleString('en-US')
     let bank = (user.bank || 0).toLocaleString('en-US')
