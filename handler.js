@@ -47,6 +47,15 @@ return;
 }
 sender = m.isGroup ? (m.key.participant ? m.key.participant : m.sender) : m.key.remoteJid;
 
+const groupMetadata_lid = m.isGroup ? { ...(this.chats[m.chat]?.metadata || await this.groupMetadata(m.chat).catch(_ => null) || {}), ...(((this.chats[m.chat]?.metadata || await this.groupMetadata(m.chat).catch(_ => null) || {}).participants) && { participants: ((this.chats[m.chat]?.metadata || await this.groupMetadata(m.chat).catch(_ => null) || {}).participants || []).map(p => ({ ...p, id: p.jid, jid: p.jid, lid: p.lid })) }) } : {}
+const participants_lid = ((m.isGroup ? groupMetadata_lid.participants : []) || []).map(participant => ({ id: participant.jid, jid: participant.jid, lid: participant.lid, admin: participant.admin }))
+if (m.isGroup && sender.endsWith('@lid')) {
+const participantInfo = participants_lid.find(p => p.lid === sender);
+if (participantInfo && participantInfo.jid) {
+sender = participantInfo.jid; 
+}
+}
+
 m.exp = 0
 m.coin = false
 try {
