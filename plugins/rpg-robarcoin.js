@@ -1,9 +1,15 @@
-const handler = async (m, { conn, usedPrefix, command }) => {
+const handler = async (m, { conn, usedPrefix, command, participants }) => {
   try {
-    const cooldown = 2 * 60 * 60 * 1000; // 2 horas
-    const now = Date.now(); // usar número (ms) para todas las comparaciones
-    const user = global.db?.data?.users?.[m.sender];
+    const cooldown = 2 * 60 * 60 * 1000;
+    const now = Date.now(); 
 
+    let senderJid = m.sender;
+    if (m.sender.endsWith('@lid') && m.isGroup) {
+        const pInfo = participants.find(p => p.lid === m.sender);
+        if (pInfo && pInfo.jid) senderJid = pInfo.jid;
+    }
+
+    const user = global.db?.data?.users?.[senderJid];
     if (!user) return conn.reply(m.chat, `${emoji2} *Tu usuario no está registrado en la base de datos.*`, m);
 
     let target = null;
@@ -17,15 +23,21 @@ const handler = async (m, { conn, usedPrefix, command }) => {
       return conn.reply(m.chat, `${emoji2} *Debes mencionar a alguien para intentar robarle.*`, m);
     }
 
-    if (target === m.sender) {
+    let targetJid = target;
+    if (target.endsWith('@lid') && m.isGroup) {
+        const pInfo = participants.find(p => p.lid === target);
+        if (pInfo && pInfo.jid) targetJid = pInfo.jid;
+    }
+
+    if (targetJid === senderJid) {
       return conn.reply(m.chat, `${emoji2} *No puedes robarte a ti mismo.*`, m);
     }
 
-    if (!global.db?.data?.users?.[target]) {
+    if (!global.db?.data?.users?.[targetJid]) {
       return conn.reply(m.chat, `${emoji2} *Ese usuario no está registrado en la base de datos.*`, m);
     }
 
-    const targetUser = global.db.data.users[target];
+    const targetUser = global.db.data.users[targetJid];
 
     targetUser.coin = Number.isFinite(targetUser.coin) ? Math.max(0, Number(targetUser.coin)) : 0;
     user.coin = Number.isFinite(user.coin) ? Number(user.coin) : 0;
@@ -48,10 +60,7 @@ const handler = async (m, { conn, usedPrefix, command }) => {
 
     targetUser.coin = Math.max(0, targetUser.coin - finalRob);
     user.coin = (user.coin || 0) + finalRob;
-
     user.lastrob2 = now;
-
-    // if (global.db.write) await global.db.write();
 
     const frases = [
       `✿ ¡𝚁𝚘𝚋𝚘 𝙴𝚇𝙸𝚃𝙾𝚂𝙾! ✿\nHas saqueado a @${target.split("@")[0]} y te llevaste *¥${finalRob.toLocaleString()} ${m.moneda}* 💸`,
@@ -59,7 +68,7 @@ const handler = async (m, { conn, usedPrefix, command }) => {
       `✿ Te pusiste la capucha y sin ser visto robaste *¥${finalRob.toLocaleString()} ${m.moneda}* a @${target.split("@")[0]} 😈`,
       `✿ 🏃 Escapaste por los callejones oscuros tras robar *¥${finalRob.toLocaleString()} ${m.moneda}* de @${target.split("@")[0]}`
     ];
-
+    
     await conn.reply(m.chat, pickRandom(frases), m, { mentions: [target] });
   } catch (err) {
     console.error('Error en comando rob:', err);
@@ -80,7 +89,6 @@ function pickRandom(list) {
 }
 
 function msToTime(duration) {
-  // duration en ms (número >= 0)
   const totalSeconds = Math.max(0, Math.floor(duration / 1000));
   const hours = Math.floor(totalSeconds / 3600);
   const minutes = Math.floor((totalSeconds % 3600) / 60);
