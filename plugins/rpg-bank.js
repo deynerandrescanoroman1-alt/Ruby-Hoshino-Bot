@@ -1,49 +1,50 @@
-let handler = async (m, { conn, usedPrefix }) => {
-  // Obtener el usuario mencionado, citado o el mismo autor
-  let who = m.mentionedJid && m.mentionedJid[0]
-    ? m.mentionedJid[0]
-    : m.quoted
-    ? m.quoted.sender
-    : m.sender
+import db from '../lib/database.js'
 
-  // Verificar si el usuario existe en la base de datos
-  if (!global.db.data.users[who])
-    return m.reply(`ꕥ El usuario no se encuentra en mi base de datos.`)
+let handler = async (m, { conn, usedPrefix, participants }) => {
+    let who = m.mentionedJid[0] 
+        ? m.mentionedJid[0] 
+        : m.quoted 
+        ? m.quoted.sender 
+        : m.sender
 
-  let user = global.db.data.users[who]
-  let name
-  try {
-    name = (await conn.getName(who)) || who.split('@')[0]
-  } catch {
-    name = who.split('@')[0]
-  }
+    if (who == conn.user.jid) return m.react('✖️')
 
-  // Moneda del bot (puedes cambiarla)
-  let currency = global.db.data.settings?.[conn.user.jid]?.currency || '💴'
+    let primaryJid = who;
+    if (who.endsWith('@lid') && m.isGroup) {
+        const participantInfo = participants.find(p => p.lid === who);
+        if (participantInfo && participantInfo.jid) {
+            primaryJid = participantInfo.jid;
+        }
+    }
 
-  // Datos de usuario
-  let coin = user.coin || 0
-  let bank = user.bank || 0
-  let total = coin + bank
 
-  // Mensaje final
-  const texto = `
-ᥫ᭡  𝐈𝐧𝐟𝐨𝐫𝐦𝐚𝐜𝐢𝐨́𝐧  -  𝐁𝐚𝐥𝐚𝐧𝐜𝐞  ❀
+    if (!(primaryJid in global.db.data.users)) 
+        return m.reply(`${emoji} *El usuario no se encuentra en mi base de datos.*`)
 
-ᰔᩚ  𝐔𝐬𝐮𝐚𝐫𝐢𝐨 » *${name}*  
-⛀  𝐂𝐚𝐫𝐭𝐞𝐫𝐚 » *${currency}${coin.toLocaleString()}*
-⚿  𝐁𝐚𝐧𝐜𝐨 » *${currency}${bank.toLocaleString()}*
-⛁  𝐓𝐨𝐭𝐚𝐥 » *${currency}${total.toLocaleString()}*
+    let user = global.db.data.users[primaryJid]
+    let nombre = await conn.getName(primaryJid)
 
-> 〣 *Para proteger tu dinero, depósitalo en el banco usando ${usedPrefix}deposit*
-`
+    let coin = (user.coin || 0).toLocaleString('en-US')
+    let bank = (user.bank || 0).toLocaleString('en-US')
+    let total = ((user.coin || 0) + (user.bank || 0)).toLocaleString('en-US')
 
-  await conn.reply(m.chat, texto, m)
+    let texto = `
+╭─〔 ᥫ᭡ 𝗜𝗡𝗙𝗢 𝗘𝗖𝗢𝗡𝗢́𝗠𝗜𝗖𝗔 ❀ 〕
+│ 👤 Usuario » *${nombre}*
+│ 💸 Dinero » *¥${coin} ${m.moneda}*
+│ 🏦 Banco » *¥${bank} ${m.moneda}*
+│ 🧾 Total » *¥${total} ${m.moneda}*
+╰─────────────────────
+> 📌 Usa *${usedPrefix}deposit* para proteger tu dinero en el banco.
+    `.trim()
+
+    await conn.reply(m.chat, texto, m)
 }
 
 handler.help = ['bal']
 handler.tags = ['rpg']
 handler.command = ['bal', 'balance', 'bank']
+handler.register = true
 handler.group = true
 
 export default handler
