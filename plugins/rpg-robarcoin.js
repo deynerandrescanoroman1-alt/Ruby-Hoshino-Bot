@@ -6,7 +6,7 @@ const handler = async (m, { conn, usedPrefix, command, participants }) => {
     let senderJid = m.sender;
     if (m.sender.endsWith('@lid') && m.isGroup) {
         const pInfo = participants.find(p => p.lid === m.sender);
-        if (pInfo && pInfo.jid) senderJid = pInfo.jid;
+        if (pInfo && pInfo.id) senderJid = pInfo.id; 
     }
 
     const user = global.db?.data?.users?.[senderJid];
@@ -26,7 +26,7 @@ const handler = async (m, { conn, usedPrefix, command, participants }) => {
     let targetJid = target;
     if (target.endsWith('@lid') && m.isGroup) {
         const pInfo = participants.find(p => p.lid === target);
-        if (pInfo && pInfo.jid) targetJid = pInfo.jid;
+        if (pInfo && pInfo.id) targetJid = pInfo.id; 
     }
 
     if (targetJid === senderJid) {
@@ -81,13 +81,10 @@ handler.tags = ['rpg'];
 handler.command = ['robar', 'steal', 'rob'];
 handler.group = true;
 handler.register = true;
-
 export default handler;
-
 function pickRandom(list) {
   return list[Math.floor(Math.random() * list.length)];
 }
-
 function msToTime(duration) {
   const totalSeconds = Math.max(0, Math.floor(duration / 1000));
   const hours = Math.floor(totalSeconds / 3600);
