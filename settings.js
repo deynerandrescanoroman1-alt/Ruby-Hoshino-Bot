@@ -25,7 +25,7 @@ global.owner = [
 
 // <-- Número @lid -->
   ['51906278352', 'Deyner', true],
-  ['51932884973', 'Deynerrip, true],
+  ['51932884973', 'Deynerrip', true],
   ['', 'nevi', true],
   ['', 'legna', true],
   ['', 'speed3xz', true]
