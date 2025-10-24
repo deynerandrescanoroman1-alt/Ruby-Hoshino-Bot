@@ -37,7 +37,7 @@ const handler = async (m, { conn }) => {
 
         const work = pickRandom(trabajosMalos);
         await m.react('❌');
-        await conn.reply(m.chat, `${work} y en el proceso perdiste *¥${loss.toLocaleString()} ${m.moneda}*.\n\n*💰 Cartera:* ¥${user.coin.toLocaleString()} | *🏦 Banco:* ¥${user.bank.toLocaleString()}`, m);
+        await conn.reply(m.chat, `${work} y en el proceso perdiste *¥${loss.toLocaleString()} ${m.moneda}*.\n\n*💰 Cartera:* *¥${user.coin.toLocaleString()}* | *🏦 Banco:* *¥${user.bank.toLocaleString()}*`, m);
     }
 
     cooldowns[m.sender] = Date.now();
