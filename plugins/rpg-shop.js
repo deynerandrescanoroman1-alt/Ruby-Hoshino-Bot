@@ -58,7 +58,9 @@ mascotas:`*MASCOTAS* (Próximamente...)
    › *Costo:* 500,000 Coins
 `
 };
+
 let handler=async(m,{conn,text,usedPrefix,command})=>{
+try{
 let user=global.db.data.users[m.sender];
 if(!user)return m.reply('❌ No estás registrado. Usa .reg para registrarte.');
 let moneda=global.moneda||'Coins';
@@ -84,15 +86,10 @@ renderLargerThumbnail:true
 };
 const emojiMap={consumibles:'🧪',equipamiento:'⚔️',cofres:'🎁',mascotas:'🥚'};
 if(category&&categories.includes(category)){
-try{
-if(conn.react)await m.react(emojiMap[category]||'🛍️');
+if(m.react)try{await m.react(emojiMap[category]||'🛍️');}catch{}
 let replyText=shopItems[category].replace(/Coins/g,moneda);
 await conn.reply(m.chat,replyText,m,{contextInfo});
 return;
-}catch(e){
-console.error(e);
-return conn.reply(m.chat,'❌ Ocurrió un error al mostrar la categoría.',m);
-}
 }
 const buttons=[
 {buttonId:`${usedPrefix+command} consumibles`,buttonText:{displayText:'🧃 𝙘𝙤𝙣𝙨𝙪𝙢𝙞𝙗𝙡𝙚𝙨'},type:1},
@@ -110,7 +107,12 @@ buttons:buttons,
 headerType:4,
 contextInfo
 },{quoted:m});
+}catch(err){
+let errorMsg=`❌ *Error en el comando ${command}:*\n\n> ${err?.message||String(err)}\n\n📜 *Detalles técnicos:*\n${err?.stack||'No disponible'}`;
+await conn.reply(m.chat,errorMsg,m);
+}
 };
+
 handler.help=['shop','tienda'];
 handler.tags=['rpg'];
 handler.command=['shop','tienda'];
