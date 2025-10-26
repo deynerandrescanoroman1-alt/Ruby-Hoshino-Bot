@@ -84,7 +84,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
         thumbnail: global.icons || 'https://files.catbox.moe/yeojfu.jpg',
         sourceUrl: global.redes || '',
         mediaType: 1,
-        renderLargerThumbnail: true
+        renderLargerThumbnail: false
       }
     };
 
