@@ -1,108 +1,125 @@
-const handler = async (m, {conn}) => {
-  const user = global.db.data.users[m.sender];
-  const randomaku1 = `${Math.floor(Math.random() * 5)}`;
-  const randomaku2 = `${Math.floor(Math.random() * 5)}`;
-  const randomaku4 = `${Math.floor(Math.random() * 5)}`;
-  const randomaku3 = `${Math.floor(Math.random() * 5)}`;
-  const randomaku5 = `${Math.floor(Math.random() * 5)}`;
-  const randomaku6 = `${Math.floor(Math.random() * 5)}`;
-  const randomaku7 = `${Math.floor(Math.random() * 5)}`;
-  const randomaku8 = `${Math.floor(Math.random() * 5)}`;
-  const randomaku9 = `${Math.floor(Math.random() * 5)}`;
-  const randomaku10 = `${Math.floor(Math.random() * 5)}`;
-  const randomaku11 = `${Math.floor(Math.random() * 5)}`;
-  const randomaku12 = `${Math.floor(Math.random() * 5)}`.trim();
-  const rbrb1 = (randomaku1 * 1);
-  const rbrb2 = (randomaku2 * 1);
-  const rbrb3 = (randomaku3 * 1);
-  const rbrb4 = (randomaku4 * 1);
-  const rbrb5 = (randomaku5 * 1);
-  const rbrb6 = (randomaku6 * 1);
-  const rbrb7 = (randomaku7 * 1);
-  const rbrb8 = (randomaku8 * 1);
-  const rbrb9 = (randomaku9 * 1);
-  const rbrb10 = (randomaku10 * 1);
-  const rbrb11 = (randomaku11 * 1);
-  const rbrb12 = (randomaku12 * 1);
-  const anti1 = `${rbrb1}`;
-  const anti2 = `${rbrb2}`;
-  const anti3 = `${rbrb3}`;
-  const anti4 = `${rbrb4}`;
-  const anti5 = `${rbrb5}`;
-  const anti6 = `${rbrb6}`;
-  const anti7 = `${rbrb7}`;
-  const anti8 = `${rbrb8}`;
-  const anti9 = `${rbrb9}`;
-  const anti10 = `${rbrb10}`;
-  const anti11 = `${rbrb11}`;
-  const anti12 = `${rbrb12}`;
-  const ar1 = `${['🪚', '⛏️', '🧨', '💣', '🔫', '🔪', '🗡️', '🏹', '🦾', '🥊', '🧹', '🔨', '🛻'].getRandom()}`;
-  const ar2 = `${['🪚', '⛏️', '🧨', '💣', '🔫', '🔪', '🗡️', '🏹', '🦾', '🥊', '🧹', '🔨', '🛻'].getRandom()}`;
-  const ar3 = `${['🪚', '⛏️', '🧨', '💣', '🔫', '🔪', '🗡️', '🏹', '🦾', '🥊', '🧹', '🔨', '🛻'].getRandom()}`;
-  const ar4 = `${['🪚', '⛏️', '🧨', '💣', '🔫', '🔪', '🗡️', '🏹', '🦾', '🥊', '🧹', '🔨', '🛻'].getRandom()}`;
-  const ar5 = `${['🪚', '⛏️', '🧨', '💣', '🔫', '🔪', '🗡️', '🏹', '🦾', '🥊', '🧹', '🔨', '🛻'].getRandom()}`;
-  const ar6 = `${['🪚', '⛏️', '🧨', '💣', '🔫', '🔪', '🗡️', '🏹', '🦾', '🥊', '🧹', '🔨', '🛻'].getRandom()}`;
-  const ar7 = `${['🪚', '⛏️', '🧨', '💣', '🔫', '🔪', '🗡️', '🏹', '🦾', '🥊', '🧹', '🔨', '🛻'].getRandom()}`;
-  const ar8 = `${['🪚', '⛏️', '🧨', '💣', '🔫', '🔪', '🗡️', '🏹', '🦾', '🥊', '🧹', '🔨', '🛻'].getRandom()}`;
-  const ar9 = `${['🪚', '⛏️', '🧨', '💣', '🔫', '🔪', '🗡️', '🏹', '🦾', '🥊', '🧹', '🔨', '🛻'].getRandom()}`;
-  const ar10 = `${['🪚', '⛏️', '🧨', '💣', '🔫', '🔪', '🗡️', '🏹', '🦾', '🥊', '🧹', '🔨', '🛻'].getRandom()}`;
-  const ar11 = `${['🪚', '⛏️', '🧨', '💣', '🔫', '🔪', '🗡️', '🏹', '🦾', '🥊', '🧹', '🔨', '🛻'].getRandom()}`;
-  const ar12 = `${['🪚', '⛏️', '🧨', '💣', '🔫', '🔪', '🗡️', '🏹', '🦾', '🥊', '🧹', '🔨', '🛻'].getRandom()}`;
-  const hsl = `
-*✧ Resultados de la caza ${conn.getName(m.sender)} ✧*
+import db from '../lib/database.js';
 
- *🐂 ${ar1} ${anti1}*			 *🐃 ${ar7} ${anti7}*
- *🐅 ${ar2} ${anti2}*			 *🐮 ${ar8} ${anti8}*
- *🐘 ${ar3} ${anti3}*			 *🐒 ${ar9} ${anti9}*
- *🐐 ${ar4} ${anti4}*			 *🐗 ${ar10} ${anti10}*
- *🐼 ${ar5} ${anti5}*			 *🐖 ${ar11} ${anti11}*
- *🐊 ${ar6} ${anti6}*		    *🐓 ${ar12} ${anti12}*`.trim();
-  global.db.data.users[m.sender].banteng += rbrb1;
-  global.db.data.users[m.sender].harimau += rbrb2;
-  global.db.data.users[m.sender].gajah += rbrb3;
-  global.db.data.users[m.sender].kambing += rbrb4;
-  global.db.data.users[m.sender].panda += rbrb5;
-  global.db.data.users[m.sender].buaya += rbrb6;
-  global.db.data.users[m.sender].kerbau += rbrb7;
-  global.db.data.users[m.sender].sapi += rbrb8;
-  global.db.data.users[m.sender].monyet += rbrb9;
-  global.db.data.users[m.sender].babihutan += rbrb10;
-  global.db.data.users[m.sender].babi += rbrb11;
-  global.db.data.users[m.sender].ayam += rbrb12;
+let cooldowns = {};
 
-  const time = global.db.data.users[m.sender].lastberburu + 2700000; // 45 Minutos
-  if (new Date - global.db.data.users[m.sender].lastberburu < 2700000) return conn.reply(m.chat, `Por favor descansá un momento para seguir cazando\n\n⫹⫺ Tiempo ${clockString(time - new Date())}\n${wm}`, m);
-
-  setTimeout(() => {
-    conn.reply(m.chat, hsl, m);
-  }, 20000);
-
-  setTimeout(() => {
-    conn.reply(m.chat, `@${m.sender.split('@s.whatsapp.net')[0]} *${['OBJETIVO FIJADO 🎯', 'Carnada en Marcha 🍫 🍇 🍖', 'ANIMALES DETECTADOS!! 🐂 🐅 🐘 🐼', 'ANIMALES DETECTADOS!! 🐖 🐃 🐮 🐒'].getRandom()}*`, null, {mentions: [m.sender]});
-  }, 18000);
-
-  setTimeout(() => {
-    conn.reply(m.chat, `@${m.sender.split('@s.whatsapp.net')[0]} *${['Armas lista para la Caza!!', 'Probando Armas 🔫 💣 🪓 🏹', 'CARROS PARA LA CAZA!! 🚗 🏍️ 🚜', 'TIEMPO BUENO PARA LA CAZA 🧤'].getRandom()}*`, null, {mentions: [m.sender]});
-  }, 15000);
-
-  setTimeout(() => {
-    conn.reply(m.chat, `@${m.sender.split('@s.whatsapp.net')[0]} *${['Buscando implementos de caza...', 'Alistando todo para la caza!!', 'Estableciendo Lugar de la Caza...', 'PREPARANDO LUGAR DE CAZA!!'].getRandom()}*`, m, m.mentionedJid ? {mentions: [m.sender]} : {});
-  }, 0);
-  user.lastberburu = new Date * 1;
+const weaponStats = {
+'none': { damage: 5, crit_chance: 0.05 },
+'daga_oxidada': { damage: 15, crit_chance: 0.10 },
+'espada_acero': { damage: 50, crit_chance: 0.15 }
 };
-handler.help = ['berburu'];
+
+const armorStats = {
+'none': { defense: 0 },
+'ropa_tela': { defense: 5 },
+'armadura_cuero': { defense: 15 }
+};
+
+const monsters = [
+{ name: 'Goblin', hp: 50, base_damage: 10, coin_reward: 1000, exp_reward: 75, material: 'goblin_skin', mat_chance: 0.6, mat_amount: 1 },
+{ name: 'Lobo del Bosque', hp: 80, base_damage: 15, coin_reward: 1500, exp_reward: 100, material: 'goblin_skin', mat_chance: 0.8, mat_amount: 2 },
+{ name: 'Orco', hp: 150, base_damage: 25, coin_reward: 3000, exp_reward: 200, material: 'orc_bone', mat_chance: 0.5, mat_amount: 1 },
+{ name: 'Golem de Piedra', hp: 250, base_damage: 20, coin_reward: 5000, exp_reward: 300, material: 'stone', mat_chance: 1.0, mat_amount: 10 }
+];
+
+function pickRandom(list) {
+return list[Math.floor(Math.random() * list.length)];
+}
+function segundosAHMS(segundos) {
+let minutos = Math.floor(segundos / 60);
+let segundosRestantes = segundos % 60;
+if (minutos === 0) return `${segundosRestantes}s`;
+return `${minutos}m ${segundosRestantes}s`;
+}
+
+let handler = async (m, { conn }) => {
+let user = global.db.data.users[m.sender];
+let cooldown = 5 * 60 * 1000;
+
+if (cooldowns[m.sender] && Date.now() - cooldowns[m.sender] < cooldown) {
+const remaining = segundosAHMS(Math.ceil((cooldowns[m.sender] + cooldown - Date.now()) / 1000));
+return m.reply(`Estás descansando de tu última cacería. Espera *${remaining}*.`);
+}
+
+if (user.health <= 20) {
+return m.reply(`❤️ Tienes muy poca salud (*${user.health} HP*). Usa *${usedPrefix}heal* antes de cazar.`);
+}
+
+let weapon = user.equipment.weapon || 'none';
+let armor = user.equipment.armor || 'none';
+
+let weaponData = weaponStats[weapon] || weaponStats['none'];
+let armorData = armorStats[armor] || armorStats['none'];
+
+let monster = pickRandom(monsters);
+
+let user_base_damage = weaponData.damage;
+let user_dps = user_base_damage / 2;
+
+let monster_base_damage = monster.base_damage;
+let monster_defense_penetration = 1 - (armorData.defense / 100);
+let monster_dps = (monster_base_damage * monster_defense_penetration) / 3;
+
+let rounds_to_kill_monster = monster.hp / user_dps;
+let rounds_to_kill_user = user.health / monster_dps;
+
+let msg = `⚔️ *¡Encuentro Salvaje!* ⚔️\n\n` +
+`Encontraste un *${monster.name}* (HP: ${monster.hp})\n\n` +
+`*Tu Equipo:*\n` +
+`› 🗡️ Arma: ${weapon}\n` +
+`› 🛡️ Armadura: ${armor}\n\n`;
+
+if (rounds_to_kill_monster <= rounds_to_kill_user) {
+let hp_lost = Math.floor(rounds_to_kill_monster * monster_dps);
+if (hp_lost < 1) hp_lost = 1;
+user.health = Math.max(0, user.health - hp_lost);
+
+let coins_won = monster.coin_reward;
+let exp_won = monster.exp_reward;
+user.coin += coins_won;
+user.exp += exp_won;
+
+msg += `*¡VICTORIA!* 🎉\n` +
+`Derrotaste al ${monster.name} pero te costó *${hp_lost} HP*.\n\n` +
+`*Recompensas:*\n` +
+`› 💰 +${coins_won.toLocaleString()} ${m.moneda}\n` +
+`› ✨ +${exp_won} XP\n`;
+
+if (Math.random() < monster.mat_chance) {
+let mat_name = monster.material;
+let mat_amount = monster.mat_amount;
+if (!user.materials[mat_name]) user.materials[mat_name] = 0;
+user.materials[mat_name] += mat_amount;
+msg += `› 📦 +${mat_amount} ${mat_name}\n`;
+}
+msg += `\n❤️ Salud restante: ${user.health}/100`;
+await m.react('🎉');
+
+} else {
+let hp_lost = Math.floor(user.health * 0.5);
+user.health -= hp_lost;
+let coins_lost_perc = Math.floor(user.coin * 0.10);
+let coins_lost = Math.min(coins_lost_perc, 5000);
+user.coin -= coins_lost;
+user.exp += 10;
+
+msg += `*¡DERROTA!* 💀\n` +
+`El ${monster.name} te dio una paliza y tuviste que huir.\n\n` +
+`*Penalización:*\n` +
+`› ❤️ -${hp_lost} HP\n` +
+`› 💰 -${coins_lost.toLocaleString()} ${m.moneda}\n` +
+`› ✨ +10 XP (por el esfuerzo)\n` +
+`\n❤️ Salud restante: ${user.health}/100`;
+await m.react('💀');
+}
+
+cooldowns[m.sender] = Date.now();
+await conn.reply(m.chat, msg, m);
+};
+
+handler.help = ['cazar', 'hunt'];
 handler.tags = ['rpg'];
-handler.command = ['cazar', 'hunt', 'berburu']
+handler.command = ['cazar', 'hunt'];
 handler.group = true;
 handler.register = true;
 
 export default handler;
-
-function clockString(ms) {
-  const h = Math.floor(ms / 3600000);
-  const m = Math.floor(ms / 60000) % 60;
-  const s = Math.floor(ms / 1000) % 60;
-  console.log({ms, h, m, s});
-  return [h, m, s].map((v) => v.toString().padStart(2, 0) ).join(':');
-}
-
