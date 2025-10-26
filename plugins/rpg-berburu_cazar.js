@@ -10,8 +10,8 @@ const weaponStats = {
 
 const armorStats = {
 'none': { defense: 0 },
-'ropa_tela': { defense: 5 },
-'armadura_cuero': { defense: 15 }
+'ropa_tela': { defense: 5 }, // 5% de reducción de daño
+'armadura_cuero': { defense: 15 } // 15% de reducción de daño
 };
 
 const monsters = [
@@ -33,7 +33,7 @@ return `${minutos}m ${segundosRestantes}s`;
 
 let handler = async (m, { conn }) => {
 let user = global.db.data.users[m.sender];
-let cooldown = 5 * 60 * 1000;
+let cooldown = 5 * 60 * 1000; // 5 minutos
 
 if (cooldowns[m.sender] && Date.now() - cooldowns[m.sender] < cooldown) {
 const remaining = segundosAHMS(Math.ceil((cooldowns[m.sender] + cooldown - Date.now()) / 1000));
@@ -53,11 +53,11 @@ let armorData = armorStats[armor] || armorStats['none'];
 let monster = pickRandom(monsters);
 
 let user_base_damage = weaponData.damage;
-let user_dps = user_base_damage / 2;
+let user_dps = user_base_damage / 2; // Ataca cada 2 segundos
 
 let monster_base_damage = monster.base_damage;
-let monster_defense_penetration = 1 - (armorData.defense / 100);
-let monster_dps = (monster_base_damage * monster_defense_penetration) / 3;
+let monster_defense_penetration = 1 - (armorData.defense / 100); // 15% defensa = 0.85
+let monster_dps = (monster_base_damage * monster_defense_penetration) / 3; // Monstruo ataca cada 3 seg
 
 let rounds_to_kill_monster = monster.hp / user_dps;
 let rounds_to_kill_user = user.health / monster_dps;
@@ -100,7 +100,7 @@ user.health -= hp_lost;
 let coins_lost_perc = Math.floor(user.coin * 0.10);
 let coins_lost = Math.min(coins_lost_perc, 5000);
 user.coin -= coins_lost;
-user.exp += 10;
+user.exp += 10; // 10 XP por el esfuerzo
 
 msg += `*¡DERROTA!* 💀\n` +
 `El ${monster.name} te dio una paliza y tuviste que huir.\n\n` +
