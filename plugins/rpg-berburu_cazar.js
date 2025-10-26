@@ -20,7 +20,7 @@ const monsters = [
 { name: 'Goblin', hp: 50, base_damage: 10, coin_reward: 1000, exp_reward: 75, material: 'goblin_skin', mat_chance: 0.6, mat_amount: 1, imageUrl: 'https://files.catbox.moe/j5lf45.jpg' },
 { name: 'Esqueleto', hp: 70, base_damage: 15, coin_reward: 1200, exp_reward: 90, material: 'orc_bone', mat_chance: 0.7, mat_amount: 2, imageUrl: 'https://files.catbox.moe/d5k195.jpg' },
 { name: 'Lobo del Bosque', hp: 80, base_damage: 18, coin_reward: 1500, exp_reward: 100, material: 'wolf_fur', mat_chance: 0.8, mat_amount: 1, imageUrl: 'https://files.catbox.moe/2i4gz2.jpg' },
-{ name: 'Arpía', hp: 100, base_damage: 22, coin_reward: 2000, exp_reward: 130, material: 'harpy_feather', mat_chance: 0.6, mat_amount: 3, imageUrl: 'https://i.postimg.cc/vH4rP4f4/harpy.jpg' },
+{ name: 'Arpía', hp: 100, base_damage: 22, coin_reward: 2000, exp_reward: 130, material: 'harpy_feather', mat_chance: 0.6, mat_amount: 3, imageUrl: 'https://files.catbox.moe/c89ydj.jpg' },
 { name: 'Orco', hp: 150, base_damage: 25, coin_reward: 3000, exp_reward: 200, material: 'orc_bone', mat_chance: 0.5, mat_amount: 1, imageUrl: 'https://i.postimg.cc/tJ0vGq2N/orc.jpg' },
 { name: 'Cangrejo Gigante', hp: 180, base_damage: 20, coin_reward: 2500, exp_reward: 180, material: 'chitin_shell', mat_chance: 0.9, mat_amount: 1, imageUrl: 'https://i.postimg.cc/9F7B0S9T/crab.jpg' },
 { name: 'Golem de Piedra', hp: 250, base_damage: 20, coin_reward: 5000, exp_reward: 300, material: 'stone', mat_chance: 1.0, mat_amount: 10, imageUrl: 'https://i.postimg.cc/8PzFB4W0/golem.jpg' },
