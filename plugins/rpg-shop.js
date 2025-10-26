@@ -114,7 +114,6 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
       footer: '🐾 ' + (global.packname || 'Tu Bot RPG'),
       buttons,
       headerType: 4,
-      contextInfo
     }, { quoted: m });
 
   } catch (err) {
