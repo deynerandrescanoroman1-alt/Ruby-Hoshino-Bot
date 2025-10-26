@@ -216,3 +216,6 @@ handler.help = ['cazar', 'hunt'];
 handler.tags = ['rpg'];
 handler.command = ['cazar', 'hunt'];
 handler.group = true;
+handler.register = true;
+
+export default handler;
