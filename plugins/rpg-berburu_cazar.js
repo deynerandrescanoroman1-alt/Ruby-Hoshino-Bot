@@ -18,7 +18,7 @@ const armorStats = {
 const monsters = [
 { name: 'Slime', hp: 30, base_damage: 5, coin_reward: 500, exp_reward: 50, material: 'slime_goo', mat_chance: 0.9, mat_amount: 2, imageUrl: 'https://files.catbox.moe/4o2m4a.jpeg' },
 { name: 'Goblin', hp: 50, base_damage: 10, coin_reward: 1000, exp_reward: 75, material: 'goblin_skin', mat_chance: 0.6, mat_amount: 1, imageUrl: 'https://files.catbox.moe/j5lf45.jpg' },
-{ name: 'Esqueleto', hp: 70, base_damage: 15, coin_reward: 1200, exp_reward: 90, material: 'orc_bone', mat_chance: 0.7, mat_amount: 2, imageUrl: 'https://i.postimg.cc/j21c0K2F/skeleton.jpg' },
+{ name: 'Esqueleto', hp: 70, base_damage: 15, coin_reward: 1200, exp_reward: 90, material: 'orc_bone', mat_chance: 0.7, mat_amount: 2, imageUrl: 'https://files.catbox.moe/d5k195.jpg' },
 { name: 'Lobo del Bosque', hp: 80, base_damage: 18, coin_reward: 1500, exp_reward: 100, material: 'wolf_fur', mat_chance: 0.8, mat_amount: 1, imageUrl: 'https://i.postimg.cc/Z5y8gW9D/wolf.jpg' },
 { name: 'Arpía', hp: 100, base_damage: 22, coin_reward: 2000, exp_reward: 130, material: 'harpy_feather', mat_chance: 0.6, mat_amount: 3, imageUrl: 'https://i.postimg.cc/vH4rP4f4/harpy.jpg' },
 { name: 'Orco', hp: 150, base_damage: 25, coin_reward: 3000, exp_reward: 200, material: 'orc_bone', mat_chance: 0.5, mat_amount: 1, imageUrl: 'https://i.postimg.cc/tJ0vGq2N/orc.jpg' },
