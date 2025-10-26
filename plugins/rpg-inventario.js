@@ -15,13 +15,13 @@ let premium = user.premium ? '✅' : '❌';
 let coin = user.coin || 0;
 let bank = user.bank || 0;
 
-const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+const capitalize = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : 'None');
 
 let equip = user.equipment || {};
 let equipment_text = `*Equipamiento:*
-  › 🗡️ Arma: ${capitalize(equip.weapon || 'none')}
-  › 🛡️ Armadura: ${capitalize(equip.armor || 'none')}
-  › 🛠️ Herramienta: ${capitalize(equip.tool || 'none')}\n`;
+  › 🗡️ Arma: ${capitalize(equip.weapon)}
+  › 🛡️ Armadura: ${capitalize(equip.armor)}
+  › 🛠️ Herramienta: ${capitalize(equip.tool)}`;
 
 let inv = user.inventory || {};
 let inventory_text = `*Consumibles:*
@@ -29,7 +29,7 @@ let inventory_text = `*Consumibles:*
   › 🍀 Poción de Suerte: ${inv.luck_potion || 0}
   › 🛡️ Amuleto de Escape: ${inv.escape_amulet || 0}
   › 🗝️ Ganzúa: ${inv.lockpick || 0}
-  › 🎁 Cofre Misterioso: ${inv.mysterious_chest || 0}\n`;
+  › 🎁 Cofre Misterioso: ${inv.mysterious_chest || 0}`;
 
 let mat = user.materials || {};
 let materials_text = `*Materiales:*
@@ -39,7 +39,7 @@ let materials_text = `*Materiales:*
   › 🪨 Piedra: ${user.stone || 0}
   › 🪵 Madera: ${mat.wood || 0}
   › 💎 Diamantes: ${user.diamond || 0}
-  › ♦️ Esmeraldas: ${user.emerald || 0}\n`;
+  › ♦️ Esmeraldas: ${user.emerald || 0}`; // Se quitó el \n
 
 let economy_text = `*Economía y Stats:*
   › 💸 ${m.moneda} (Cartera): ${coin.toLocaleString()}
@@ -50,12 +50,12 @@ let economy_text = `*Economía y Stats:*
   › 🎟️ Tokens: ${user.joincount || 0}
   › 🍬 Dulces: ${user.candies || 0}
   › 🎁 Regalos: ${user.gifts || 0}
-  › ⚜️ Premium: ${premium}\n`;
+  › ⚜️ Premium: ${premium}`;
 
 let status_text = `*Estado:*
   › ⏳ Últ. Aventura: ${user.lastadventure ? moment(user.lastadventure).fromNow() : 'Nunca'}
   › 🍀 Con Suerte: ${user.status.is_lucky && user.status.lucky_until > Date.now() ? '✅' : '❌'}
-  › 🚔 Encarcelado: ${user.status.is_jailed && user.status.jailed_until > Date.now() ? '✅' : '❌'}\n`;
+  › 🚔 Encarcelado: ${user.status.is_jailed && user.status.jailed_until > Date.now() ? '✅' : '❌'}`;
 
 let text = `╭━〔 Inventario de ${name} 〕⬣\n` +
 `┠───「 Equipamiento 」\n` +
