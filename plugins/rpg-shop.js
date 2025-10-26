@@ -3,7 +3,7 @@ import db from '../lib/database.js';
 let handler = async (m, { conn, text, usedPrefix, command }) => {
 let user = global.db.data.users[m.sender];
 let categories = ['consumibles', 'equipamiento', 'cofres', 'mascotas'];
-let category = text.toLowerCase();
+let category = text.trim().toLowerCase();
 
 if (!category || !categories.includes(category)) {
 let msg = `🏪 *TIENDA RPG* 🏪\n\nUsa *${usedPrefix + command} <categoria>* para ver los objetos.\n\n*Categorías Disponibles:*\n`;
