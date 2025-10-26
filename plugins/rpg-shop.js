@@ -79,7 +79,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
         serverMessageId: -1
       },
       externalAdReply: {
-        title: global.packname || 'Tienda RPG',
+        title: '⸜( •⌄• )⸝ 𝘛𝘐𝘌𝘕𝘋𝘈 𝘖𝘌𝘐𝘊𝘐𝘈𝘓 𝘙𝘗𝘎 🧃',
         body: global.dev || 'Elige una opción',
         thumbnail: global.icons || 'https://files.catbox.moe/yeojfu.jpg',
         sourceUrl: global.redes || '',
