@@ -3,6 +3,7 @@ import fetch from 'node-fetch';
 
 let cooldowns = {};
 
+// --- NUEVAS ESTADÍSTICAS CON DURABILIDAD ---
 const weaponStats = {
 'none': { damage: 5, crit_chance: 0.05, durability: Infinity },
 'daga_oxidada': { damage: 15, crit_chance: 0.10, durability: 50 },
@@ -14,6 +15,7 @@ const armorStats = {
 'ropa_tela': { defense: 10, durability: 40 }, // Aumentada a 10%
 'armadura_cuero': { defense: 25, durability: 80 } // Aumentada a 25%
 };
+// --- FIN DE ESTADÍSTICAS ---
 
 const monsters = [
 { name: 'Slime', hp: 30, base_damage: 5, coin_reward: 500, exp_reward: 50, material: 'slime_goo', mat_chance: 0.9, mat_amount: 2, imageUrl: 'https://files.catbox.moe/4o2m4a.jpeg' },
@@ -43,6 +45,7 @@ try {
 let user = global.db.data.users[m.sender];
 if (!user) return m.reply('❌ No estás registrado. Usa *.reg* para registrarte.');
 
+// Inicializa las nuevas propiedades si no existen
 user.equipment = user.equipment || {};
 user.equipment.weapon_durability = user.equipment.weapon_durability ?? 0;
 user.equipment.armor_durability = user.equipment.armor_durability ?? 0;
@@ -63,17 +66,20 @@ if (user.health <= 20) {
 return m.reply(`❤️ Tienes muy poca salud (*${user.health} HP*). Usa *${usedPrefix}heal* antes de cazar.`);
 }
 
-let combat_log = [];
+let combat_log = []; // Registro de combate
 let weapon_name = user.equipment.weapon || 'none';
 let armor_name = user.equipment.armor || 'none';
 
-if (weapon_name !== 'none' && !user.equipment.weapon_durability) {
+// --- VERIFICACIÓN DE DURABILIDAD ---
+// Si el item es nuevo (!user.equipment.weapon_durability), le asigna la durabilidad máxima.
+if (weapon_name !== 'none' && user.equipment.weapon_durability <= 0) {
 user.equipment.weapon_durability = weaponStats[weapon_name].durability;
 }
-if (armor_name !== 'none' && !user.equipment.armor_durability) {
+if (armor_name !== 'none' && user.equipment.armor_durability <= 0) {
 user.equipment.armor_durability = armorStats[armor_name].durability;
 }
 
+// Si está rota, la trata como 'none' para este combate
 if (user.equipment.weapon_durability <= 0 && weapon_name !== 'none') {
 combat_log.push(`⚠️ ¡Tu *${weapon_name}* está rota! Peleas con tus puños.`);
 weapon_name = 'none';
@@ -85,22 +91,23 @@ armor_name = 'none';
 
 let weaponData = weaponStats[weapon_name];
 let armorData = armorStats[armor_name];
+// --- FIN VERIFICACIÓN ---
 
 const monster = pickRandom(monsters);
 const monsterImage = Buffer.from(await (await fetch(monster.imageUrl)).arrayBuffer());
-const fkontak = { /* ... (al carajo) ... */ };
 
 let roll = Math.random();
 let caption = '';
 
-if (roll < 0.05) {
+// --- EVENTOS PRE-COMBATE ---
+if (roll < 0.05) { // 5% chance de Emboscada
 await m.react('🚨');
 let dmg_taken = Math.floor(monster.base_damage * (1 - (armorData.defense / 100)));
 user.health = Math.max(0, user.health - dmg_taken);
-if (armor_name !== 'none') user.equipment.armor_durability--; // Desgaste
+if (armor_name !== 'none' && user.equipment.armor_durability > 0) user.equipment.armor_durability--; // Desgaste
 combat_log.push(`🚨 *¡EMBOSCADA!* El ${monster.name} te ataca primero y recibes *${dmg_taken} HP* de daño.`);
 
-} else if (roll > 0.95) {
+} else if (roll > 0.95) { // 5% chance de que el monstruo huya
 await m.react('💨');
 let exp_won = Math.floor(monster.exp_reward * 0.1);
 user.exp += exp_won;
@@ -109,10 +116,11 @@ caption = `╭─「 💨 *¡HUYÓ!* 」
 ┠ 👹 El *${monster.name}* te vio y huyó.
 ┠ ✨ Ganaste: *+${exp_won} XP* (por asustarlo)
 ╰────────────`;
-await conn.sendMessage(m.chat, { image: monsterImage, caption: caption }, { quoted: fkontak });
+await conn.sendMessage(m.chat, { image: monsterImage, caption: caption }, { quoted: m });
 return;
 }
 
+// --- INICIO DEL COMBATE SIMULADO ---
 let user_hp = user.health;
 let monster_hp = monster.hp;
 let turn = 0;
@@ -124,27 +132,32 @@ while (user_hp > 0 && monster_hp > 0 && turn < MAX_TURNS) {
 turn++;
 combat_log.push(`\n--- *Turno ${turn}* ---`);
 
+// Turno del Usuario
 let is_crit = Math.random() < weaponData.crit_chance;
 let dmg_dealt = Math.floor(weaponData.damage * (is_crit ? 1.5 : 1)); // Crítico hace 1.5x
 monster_hp -= dmg_dealt;
-if (weapon_name !== 'none') user.equipment.weapon_durability--;
+if (weapon_name !== 'none' && user.equipment.weapon_durability > 0) user.equipment.weapon_durability--; // Desgaste
 
 combat_log.push(is_crit ? `💥 ¡GOLPE CRÍTICO! Haces *${dmg_dealt}* de daño.` : `🗡️ Atacas y haces *${dmg_dealt}* de daño.`);
 combat_log.push(`(Durabilidad Arma: ${user.equipment.weapon_durability || '∞'})`);
 
+// Turno del Monstruo (si sigue vivo)
 if (monster_hp > 0) {
 let dmg_taken = Math.floor(monster.base_damage * (1 - (armorData.defense / 100)));
 user_hp -= dmg_taken;
-if (armor_name !== 'none') user.equipment.armor_durability--;
+if (armor_name !== 'none' && user.equipment.armor_durability > 0) user.equipment.armor_durability--; // Desgaste
 
 combat_log.push(`👹 El ${monster.name} ataca y recibes *${dmg_taken}* de daño.`);
 combat_log.push(`(Durabilidad Armadura: ${user.equipment.armor_durability || '∞'})`);
 }
 }
+// --- FIN DEL COMBATE ---
 
+// Actualizar salud del usuario
 user.health = Math.max(0, user_hp);
 
 if (monster_hp <= 0) {
+// --- VICTORIA ---
 await m.react('🎉');
 let coins_won = monster.coin_reward;
 let exp_won = monster.exp_reward;
@@ -167,12 +180,13 @@ caption += `\n┠ 📦 Material: *+${mat_amount} ${mat_name}*`;
 }
 
 } else if (user_hp <= 0) {
+// --- DERROTA ---
 await m.react('💀');
-let coins_lost = Math.floor(user.coin * 0.10);
-let exp_won = Math.floor(monster.exp_reward * 0.1);
+let coins_lost = Math.floor(user.coin * 0.10); // Pierde 10% de coins
+let exp_won = Math.floor(monster.exp_reward * 0.1); // Gana 10% de exp
 user.coin = Math.max(0, user.coin - coins_lost);
 user.exp += exp_won;
-user.health = 1;
+user.health = 1; // Queda con 1 HP
 
 caption = `╭─「 💀 *¡DERROTA!* 💀 」
 ┠ 🤕 El *${monster.name}* te ha vencido.
@@ -184,6 +198,7 @@ caption = `╭─「 💀 *¡DERROTA!* 💀 」
 ╰────────────`;
 
 } else if (turn >= MAX_TURNS) {
+// --- EMPATE (Huida por límite de turnos) ---
 await m.react('💨');
 let exp_won = Math.floor(monster.exp_reward * 0.2);
 user.exp += exp_won;
@@ -207,7 +222,7 @@ m.chat,
 image: monsterImage, 
 caption: caption 
 }, 
-{ quoted: fkontak }
+{ quoted: m } // Usamos el mensaje del usuario como cita.
 );
 
 } catch (err) {
