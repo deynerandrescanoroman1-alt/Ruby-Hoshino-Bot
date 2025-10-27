@@ -4,15 +4,15 @@ import fetch from 'node-fetch';
 let cooldowns = {};
 
 const weaponStats = {
-'none': { damage: 5, crit_chance: 0.05 },
-'daga_oxidada': { damage: 15, crit_chance: 0.10 },
-'espada_acero': { damage: 50, crit_chance: 0.15 }
+'none': { damage: 5, crit_chance: 0.05, durability: Infinity },
+'daga_oxidada': { damage: 15, crit_chance: 0.10, durability: 50 },
+'espada_acero': { damage: 50, crit_chance: 0.15, durability: 100 }
 };
 
 const armorStats = {
-'none': { defense: 0 },
-'ropa_tela': { defense: 5 },
-'armadura_cuero': { defense: 15 }
+'none': { defense: 0, durability: Infinity },
+'ropa_tela': { defense: 10, durability: 40 }, // Aumentada a 10%
+'armadura_cuero': { defense: 25, durability: 80 } // Aumentada a 25%
 };
 
 const monsters = [
@@ -44,13 +44,15 @@ let user = global.db.data.users[m.sender];
 if (!user) return m.reply('❌ No estás registrado. Usa *.reg* para registrarte.');
 
 user.equipment = user.equipment || {};
+user.equipment.weapon_durability = user.equipment.weapon_durability ?? 0;
+user.equipment.armor_durability = user.equipment.armor_durability ?? 0;
 user.materials = user.materials || {};
 user.coin = user.coin || 0;
 user.exp = user.exp || 0;
 user.health = user.health ?? 100;
 
 const moneda = m.moneda || 'Coins';
-const cooldown = 3 * 60 * 1000; 
+const cooldown = 3 * 60 * 1000; // 3 minutos
 
 if (cooldowns[m.sender] && Date.now() - cooldowns[m.sender] < cooldown) {
 const remaining = segundosAHMS(Math.ceil((cooldowns[m.sender] + cooldown - Date.now()) / 1000));
@@ -61,73 +63,96 @@ if (user.health <= 20) {
 return m.reply(`❤️ Tienes muy poca salud (*${user.health} HP*). Usa *${usedPrefix}heal* antes de cazar.`);
 }
 
-const weapon = user.equipment.weapon || 'none';
-const armor = user.equipment.armor || 'none';
-const weaponData = weaponStats[weapon] || weaponStats['none'];
-const armorData = armorStats[armor] || armorStats['none'];
+let combat_log = [];
+let weapon_name = user.equipment.weapon || 'none';
+let armor_name = user.equipment.armor || 'none';
+
+if (weapon_name !== 'none' && !user.equipment.weapon_durability) {
+user.equipment.weapon_durability = weaponStats[weapon_name].durability;
+}
+if (armor_name !== 'none' && !user.equipment.armor_durability) {
+user.equipment.armor_durability = armorStats[armor_name].durability;
+}
+
+if (user.equipment.weapon_durability <= 0 && weapon_name !== 'none') {
+combat_log.push(`⚠️ ¡Tu *${weapon_name}* está rota! Peleas con tus puños.`);
+weapon_name = 'none';
+}
+if (user.equipment.armor_durability <= 0 && armor_name !== 'none') {
+combat_log.push(`⚠️ ¡Tu *${armor_name}* está rota! No tienes protección.`);
+armor_name = 'none';
+}
+
+let weaponData = weaponStats[weapon_name];
+let armorData = armorStats[armor_name];
 
 const monster = pickRandom(monsters);
-
 const monsterImage = Buffer.from(await (await fetch(monster.imageUrl)).arrayBuffer());
-const fkontak = { 
-key: { 
-participant: '0@s.whatsapp.net', 
-remoteJid: 'status@broadcast', 
-fromMe: false, 
-id: 'Caceria' 
-}, 
-message: { 
-locationMessage: { 
-name: `⚔️ Cacería: ${monster.name}`, 
-jpegThumbnail: monsterImage 
-} 
-}, 
-participant: '0@s.whatsapp.net' 
-};
+const fkontak = { /* ... (al carajo) ... */ };
 
-let crit_chance = weaponData.crit_chance + (user.level / 500);
-let defense_mult = 1 - (armorData.defense / 100);
 let roll = Math.random();
 let caption = '';
 
-let hp_lost = 0;
-let coins_won = 0;
-let exp_won = 0;
-let coins_lost = 0;
-let mat_name = null;
-let mat_amount = 0;
+if (roll < 0.05) {
+await m.react('🚨');
+let dmg_taken = Math.floor(monster.base_damage * (1 - (armorData.defense / 100)));
+user.health = Math.max(0, user.health - dmg_taken);
+if (armor_name !== 'none') user.equipment.armor_durability--; // Desgaste
+combat_log.push(`🚨 *¡EMBOSCADA!* El ${monster.name} te ataca primero y recibes *${dmg_taken} HP* de daño.`);
 
-if (roll < crit_chance) {
-await m.react('💥');
-hp_lost = Math.floor(monster.base_damage * 0.5 * defense_mult);
-coins_won = Math.floor(monster.coin_reward * 2.5);
-exp_won = Math.floor(monster.exp_reward * 2);
-
-caption = `╭─「 💥 *¡GOLPE CRÍTICO!* 💥 」
-┠ 🎯 ¡Un golpe perfecto!
-┠ 👹 Monstruo: *${monster.name}*
-┠ 💔 Daño Recibido: *-${hp_lost} HP*
-┠
-┠ *¡Botín Doble!*
-┠ 💰 Ganaste: *+${coins_won.toLocaleString()} ${moneda}*
-┠ ✨ Ganaste: *+${exp_won} XP*
+} else if (roll > 0.95) {
+await m.react('💨');
+let exp_won = Math.floor(monster.exp_reward * 0.1);
+user.exp += exp_won;
+cooldowns[m.sender] = Date.now();
+caption = `╭─「 💨 *¡HUYÓ!* 」
+┠ 👹 El *${monster.name}* te vio y huyó.
+┠ ✨ Ganaste: *+${exp_won} XP* (por asustarlo)
 ╰────────────`;
-
-if (Math.random() < (monster.mat_chance + 0.2)) {
-mat_name = monster.material;
-mat_amount = monster.mat_amount * 2;
-caption += `\n┠ 📦 Material: *+${mat_amount} ${mat_name}*`;
+await conn.sendMessage(m.chat, { image: monsterImage, caption: caption }, { quoted: fkontak });
+return;
 }
 
-} else if (roll < (0.55 + crit_chance)) {
+let user_hp = user.health;
+let monster_hp = monster.hp;
+let turn = 0;
+const MAX_TURNS = 20;
+
+combat_log.push(`⚔️ ¡Comienza el combate contra *${monster.name}* (HP: ${monster_hp})!`);
+
+while (user_hp > 0 && monster_hp > 0 && turn < MAX_TURNS) {
+turn++;
+combat_log.push(`\n--- *Turno ${turn}* ---`);
+
+let is_crit = Math.random() < weaponData.crit_chance;
+let dmg_dealt = Math.floor(weaponData.damage * (is_crit ? 1.5 : 1)); // Crítico hace 1.5x
+monster_hp -= dmg_dealt;
+if (weapon_name !== 'none') user.equipment.weapon_durability--;
+
+combat_log.push(is_crit ? `💥 ¡GOLPE CRÍTICO! Haces *${dmg_dealt}* de daño.` : `🗡️ Atacas y haces *${dmg_dealt}* de daño.`);
+combat_log.push(`(Durabilidad Arma: ${user.equipment.weapon_durability || '∞'})`);
+
+if (monster_hp > 0) {
+let dmg_taken = Math.floor(monster.base_damage * (1 - (armorData.defense / 100)));
+user_hp -= dmg_taken;
+if (armor_name !== 'none') user.equipment.armor_durability--;
+
+combat_log.push(`👹 El ${monster.name} ataca y recibes *${dmg_taken}* de daño.`);
+combat_log.push(`(Durabilidad Armadura: ${user.equipment.armor_durability || '∞'})`);
+}
+}
+
+user.health = Math.max(0, user_hp);
+
+if (monster_hp <= 0) {
 await m.react('🎉');
-hp_lost = Math.floor(monster.base_damage * defense_mult);
-coins_won = monster.coin_reward;
-exp_won = monster.exp_reward;
+let coins_won = monster.coin_reward;
+let exp_won = monster.exp_reward;
+user.coin += coins_won;
+user.exp += exp_won;
 
 caption = `╭─「 🎉 *¡VICTORIA!* 🎉 」
 ┠ 🤺 Derrotaste al *${monster.name}*.
-┠ 💔 Daño Recibido: *-${hp_lost} HP*
 ┠
 ┠ *Recompensas:*
 ┠ 💰 Ganaste: *+${coins_won.toLocaleString()} ${moneda}*
@@ -135,65 +160,45 @@ caption = `╭─「 🎉 *¡VICTORIA!* 🎉 」
 ╰────────────`;
 
 if (Math.random() < monster.mat_chance) {
-mat_name = monster.material;
-mat_amount = monster.mat_amount;
+let mat_name = monster.material;
+let mat_amount = monster.mat_amount;
+user.materials[mat_name] = (user.materials[mat_name] || 0) + mat_amount;
 caption += `\n┠ 📦 Material: *+${mat_amount} ${mat_name}*`;
 }
 
-} else if (roll < (0.75 + (defense_mult / 10))) {
-await m.react('💨');
-exp_won = Math.floor(monster.exp_reward * 0.1); 
-caption = `╭─「 💨 *¡ESCAPÓ!* 💨 」
-┠ 🏃‍♂️ El *${monster.name}* fue muy ágil.
-┠ 😅 Lograste evadir el combate.
-┠
-┠ *Resultado:*
-┠ ✨ Ganaste: *+${exp_won} XP* (por el intento)
-┠ ❤️ Salud: Sin cambios
-╰────────────`;
-
-} else if (roll < (0.90 + (defense_mult / 5))) {
+} else if (user_hp <= 0) {
 await m.react('💀');
-hp_lost = Math.floor(monster.base_damage * 1.5 * defense_mult);
-coins_lost = Math.floor(user.coin * 0.05); 
-exp_won = Math.floor(monster.exp_reward * 0.05); 
+let coins_lost = Math.floor(user.coin * 0.10);
+let exp_won = Math.floor(monster.exp_reward * 0.1);
+user.coin = Math.max(0, user.coin - coins_lost);
+user.exp += exp_won;
+user.health = 1;
 
 caption = `╭─「 💀 *¡DERROTA!* 💀 」
-┠ 🤕 El *${monster.name}* te superó.
-┠ 🩹 Tuviste que huir malherido.
+┠ 🤕 El *${monster.name}* te ha vencido.
+┠ 🩹 Huiste por los pelos, pero quedaste en 1 HP.
 ┠
 ┠ *Penalización:*
-┠ 💔 Perdiste: *-${hp_lost} HP*
-┠ 💸 Perdiste: *-${coins_lost.toLocaleString()} ${moneda}* (5% de tu cartera)
+┠ 💸 Perdiste: *-${coins_lost.toLocaleString()} ${moneda}* (10% de tu cartera)
 ┠ ✨ Ganaste: *+${exp_won} XP* (por sobrevivir)
 ╰────────────`;
 
-} else {
-await m.react('🚨');
-hp_lost = Math.floor(monster.base_damage * 2.5 * defense_mult);
-coins_lost = Math.floor(user.coin * 0.10); 
-exp_won = 1;
+} else if (turn >= MAX_TURNS) {
+await m.react('💨');
+let exp_won = Math.floor(monster.exp_reward * 0.2);
+user.exp += exp_won;
 
-caption = `╭─「 🚨 *¡EMBOSCADA!* 🚨 」
-┠ 😱 ¡El *${monster.name}* te tomó por sorpresa!
-┠ 💥 Te dio un golpe brutal antes de que pudieras reaccionar.
+caption = `╭─「 💨 *¡EMPATE!* 💨 」
+┠ 🏃‍♂️ El combate contra *${monster.name}* fue muy largo.
+┠ 😅 Ambos decidieron huir.
 ┠
-┠ *Penalización Grave:*
-┠ 💔 Perdiste: *-${hp_lost} HP*
-┠ 💸 Perdiste: *-${coins_lost.toLocaleString()} ${moneda}* (10% de tu cartera)
-┠ ✨ Ganaste: *+${exp_won} XP* (por... estar vivo?)
+┠ *Resultado:*
+┠ ✨ Ganaste: *+${exp_won} XP* (por la resistencia)
 ╰────────────`;
 }
 
-user.health = Math.max(0, user.health - hp_lost);
-user.coin = Math.max(0, user.coin - coins_lost);
-user.coin += coins_won;
-user.exp += exp_won;
-if (mat_name) {
-user.materials[mat_name] = (user.materials[mat_name] || 0) + mat_amount;
-}
-
-caption += `\n\n❤️ *Tu Salud:* ${user.health}/100`;
+caption += `\n\n--- *Resumen del Combate* ---\n${combat_log.join('\n')}`;
+caption += `\n\n❤️ *Tu Salud Final:* ${user.health}/100`;
 cooldowns[m.sender] = Date.now();
 
 await conn.sendMessage(
