@@ -111,6 +111,8 @@ equipment: user.equipment || {
 weapon: 'none',
 armor: 'none',
 tool: 'none',
+weapon_durability: isNumber(user.equipment.weapon_durability) ? user.equipment.weapon_durability : 0,
+armor_durability: isNumber(user.equipment.armor_durability) ? user.equipment.armor_durability : 0,
 },
 inventory: user.inventory || {
 health_potion: 0,
@@ -124,6 +126,11 @@ wood: 0,
 gem: 0,
 goblin_skin: 0,
 orc_bone: 0,
+slime_goo: 0,
+wolf_fur: 0,
+harpy_feather: 0,
+chitin_shell: 0,
+lich_phylactery: 0
 },
 status: user.status || {
 is_jailed: false,
@@ -135,9 +142,9 @@ lucky_until: 0,
 } else {
 global.db.data.users[sender] = {
 exp: 0, coin: 10, bank: 0, joincount: 1, diamond: 3, emerald: 0, iron: 0, gold: 0, coal: 0, stone: 0, candies: 0, gifts: 0, lastadventure: 0, health: 100, lastclaim: 0, lastcofre: 0, lastdiamantes: 0, lastcode: 0, lastduel: 0, lastpago: 0, lastmining: 0, lastcodereg: 0, muto: false, registered: false, genre: '', birth: '', marry: '', description: '', packstickers: null, name: m.name, age: -1, regTime: -1, afk: -1, afkReason: '', banned: false, useDocument: false, level: 0, role: 'Nuv', premium: false, premiumTime: 0, warn: 0,
-equipment: { weapon: 'none', armor: 'none', tool: 'none' },
+equipment: { weapon: 'none', armor: 'none', tool: 'none', weapon_durability: 0, armor_durability: 0 },
 inventory: { health_potion: 0, luck_potion: 0, escape_amulet: 0, lockpick: 0, mysterious_chest: 0 },
-materials: { wood: 0, gem: 0, goblin_skin: 0, orc_bone: 0 },
+materials: { wood: 0, gem: 0, goblin_skin: 0, orc_bone: 0, slime_goo: 0, wolf_fur: 0, harpy_feather: 0, chitin_shell: 0, lich_phylactery: 0 },
 status: { is_jailed: false, jailed_until: 0, is_lucky: false, lucky_until: 0 },
 };
 }
@@ -226,7 +233,6 @@ await delay(time)
 }, time)
 }
 if (m.isBaileys) { return }
-// m.exp += Math.ceil(Math.random() * 10) // <-- Esta línea se eliminó.
 let usedPrefix
 const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), './plugins')
 for (let name in global.plugins) {
