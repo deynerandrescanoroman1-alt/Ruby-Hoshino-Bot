@@ -47,8 +47,8 @@ const handler = async (m, { conn, text, command }) => {
     await conn.reply(m.chat, infoMessage, m, {
       contextInfo: {
         externalAdReply: {
-          title: "Ruby Hoshino 💎",
-          body: "Desarrollado por Dioneibi-rip",
+          title: botname,
+          body: dev,
           mediaType: 1,
           thumbnail: thumb,
           renderLargerThumbnail: true,
