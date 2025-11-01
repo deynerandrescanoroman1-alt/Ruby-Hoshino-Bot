@@ -5,13 +5,13 @@ const youtubeRegexID = /(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([a-z
 
 const handler = async (m, { conn, text, command }) => {
   try {
-    if (!text.trim()) {
+    if (!text || !text.trim()) {
       return conn.reply(m.chat, `✧ 𝙃𝙚𝙮! Debes escribir *el nombre o link* del video/audio para descargar.`, m)
     }
 
     await conn.sendMessage(m.chat, { react: { text: "⏳", key: m.key }})
 
-    let videoIdToFind = text.match(youtubeRegexID) || null
+    let videoIdToFind = text.match(youtubeRegexID)
     let ytplay2 = await yts(videoIdToFind ? "https://youtu.be/" + videoIdToFind[1] : text)
 
     if (videoIdToFind) {
@@ -19,7 +19,7 @@ const handler = async (m, { conn, text, command }) => {
       ytplay2 = ytplay2.all.find(item => item.videoId === videoId) || ytplay2.videos.find(item => item.videoId === videoId)
     }
 
-    ytplay2 = ytplay2.all?.[0] || ytplay2.videos?.[0] || ytplay2
+    ytplay2 = ytplay2?.all?.[0] || ytplay2?.videos?.[0] || ytplay2
     if (!ytplay2) {
       await conn.sendMessage(m.chat, { react: { text: "❌", key: m.key }})
       return m.reply("⚠︎ No encontré resultados, intenta con otro nombre o link.")
@@ -33,8 +33,12 @@ const handler = async (m, { conn, text, command }) => {
 ㅤ۫ ㅤ  🦭 ୧   ˚ \`𝒅𝒆𝒔𝒄𝒂𝒓𝒈𝒂 𝒆𝒏 𝒄𝒂𝒎𝒊𝒏𝒐\` !  ୨ 𖹭  ִֶָ  
 
 ᮫ؙܹ  ᳘︵᮫ּܹ࡛〫ࣥܳ⌒ؙ۫ ᮫ּ۪֯⏝ֺ࣯࠭۟ ᮫ּ〪࣭︶᮫ܹ᳟〫࠭߳፝֟᷼⏜᮫᮫ּ〪࣭࠭〬︵᮫ּ᳝̼࣪ 🍚⃘ᩚּ̟߲ ּ〪࣪︵᮫࣭࣪࠭ᰯּ〪࣪࠭⏜ְ࣮〫߳ ᮫ּׅ࣪۟︶᮫ܹׅ࠭〬 ᮫ּּ࣭᷼⏝ᩥ᮫〪ܹ۟࠭۟۟ ᮫ּؙ⌒᮫ܹ۫︵ᩝּּ۟࠭ ࣭۪۟
-> 🧊✿⃘࣪◌ ֪ \`𝗧𝗶́𝘁𝘂𝗹𝗼\` » *${title}* > 🧊✿⃘࣪◌ ֪ \`𝗖𝗮𝗻𝗮𝗹\` » *${canal}* > 🧊✿⃘࣪◌ ֪ \`𝗗𝘂𝗿𝗮𝗰𝗶𝗼́𝗻\` » *${timestamp}* > K 🧊✿⃘࣪◌ ֪ \`𝗩𝗶𝘀𝘁𝗮𝘀\` » *${vistas}* > 🧊✿⃘࣪◌ ֪ \`𝗣𝘂𝗯𝗹𝗶𝗰𝗮𝗱𝗼\` » *${ago}* > 🧊✿⃘࣪◌ ֪ \`𝗟𝗶𝗻𝗸\` » ${url} 
-ᓭ݄︢݃ୄᰰ𐨎 𝐢︩۪𝆬͡ thước፝֟͜͡ thước︪۪𝆬͡ 𝐢   ᅟᨳᩘ🧁ଓ   ᅟ 𝐢︩۪𝆬͡ thước፝֟͜͡ thước︪۪𝆬͡ 𝐢ୄᰰ𐨎ᓯ︢
+> 🧊✿⃘࣪◌ ֪ \`𝗧𝗶́𝘁𝘂𝗹𝗼\` » *${title}*
+> 🧊✿⃘࣪◌ ֪ \`𝗖𝗮𝗻𝗮𝗹\` » *${canal}*
+> 🧊✿⃘࣪◌ ֪ \`𝗗𝘂𝗿𝗮𝗰𝗶𝗼́𝗻\` » *${timestamp}*
+> 🧊✿⃘࣪◌ ֪ \`𝗩𝗶𝘀𝘁𝗮𝘀\` » *${vistas}*
+> 🧊✿⃘࣪◌ ֪ \`𝗣𝘂𝗯𝗹𝗶𝗰𝗮𝗱𝗼\` » *${ago}*
+> 🧊✿⃘࣪◌ ֪ \`𝗟𝗶𝗻𝗸\` » ${url}
 
 > 𐙚 🪵 ｡ Preparando tu descarga... ˙𐙚
     `.trim()
@@ -43,8 +47,8 @@ const handler = async (m, { conn, text, command }) => {
     await conn.reply(m.chat, infoMessage, m, {
       contextInfo: {
         externalAdReply: {
-          title: botname,
-          body: dev,
+          title: "Ruby Hoshino 💎",
+          body: "Desarrollado por Dioneibi-rip",
           mediaType: 1,
           thumbnail: thumb,
           renderLargerThumbnail: true,
@@ -57,7 +61,7 @@ const handler = async (m, { conn, text, command }) => {
     if (["play", "yta", "ytmp3", "playaudio"].includes(command)) {
       let audioData = null
       try {
-        const r = await ytmp3(url) 
+        const r = await ytmp3(url)
         if (r?.status && r?.download?.url) {
           audioData = { link: r.download.url, title: r.metadata?.title }
         }
@@ -88,7 +92,7 @@ const handler = async (m, { conn, text, command }) => {
           videoData = { link: r.download.url, title: r.metadata?.title }
         }
       } catch (e) {
-         console.error(e)
+        console.error(e)
       }
 
       if (!videoData) {
@@ -113,7 +117,7 @@ const handler = async (m, { conn, text, command }) => {
   }
 }
 
-handler.command = 
+handler.command = /^(play|yta|ytmp3|play2|ytv|ytmp4|playaudio|mp4)$/i
 handler.help = ["play", "yta", "ytmp3", "play2", "ytv", "ytmp4", "playaudio", "mp4"]
 handler.tags = ["descargas"]
 
