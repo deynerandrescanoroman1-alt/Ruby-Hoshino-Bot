@@ -1,13 +1,12 @@
-import { ytmp3, ytmp4 } from "../lib/youtubedl.js" 
+import { ytmp3, ytmp4 } from "../lib/youtubedl.js"
 import yts from "yt-search"
-// ELIMINAMOS 'node-fetch', ya no es necesario para esto.
 
 const youtubeRegexID = /(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([a-zA-Z0-9_-]{11})/
 
 const handler = async (m, { conn, text, command }) => {
   try {
     if (!text.trim()) {
-      return conn.reply(m.chat, `✧ 𝙃𝙚! Debes escribir *el nombre o link* del video/audio para descargar.`, m)
+      return conn.reply(m.chat, `✧ 𝙃𝙚𝙮! Debes escribir *el nombre o link* del video/audio para descargar.`, m)
     }
 
     await conn.sendMessage(m.chat, { react: { text: "⏳", key: m.key }})
@@ -30,12 +29,11 @@ const handler = async (m, { conn, text, command }) => {
     const vistas = formatViews(views)
     const canal = author?.name || "Desconocido"
 
-    // El mensaje de información sigue igual, está perfecto.
     const infoMessage = `
 ㅤ۫ ㅤ  🦭 ୧   ˚ \`𝒅𝒆𝒔𝒄𝒂𝒓𝒈𝒂 𝒆𝒏 𝒄𝒂𝒎𝒊𝒏𝒐\` !  ୨ 𖹭  ִֶָ  
 
 ᮫ؙܹ  ᳘︵᮫ּܹ࡛〫ࣥܳ⌒ؙ۫ ᮫ּ۪֯⏝ֺ࣯࠭۟ ᮫ּ〪࣭︶᮫ܹ᳟〫࠭߳፝֟᷼⏜᮫᮫ּ〪࣭࠭〬︵᮫ּ᳝̼࣪ 🍚⃘ᩚּ̟߲ ּ〪࣪︵᮫࣭࣪࠭ᰯּ〪࣪࠭⏜ְ࣮〫߳ ᮫ּׅ࣪۟︶᮫ܹׅ࠭〬 ᮫ּּ࣭᷼⏝ᩥ᮫〪ܹ۟࠭۟۟ ᮫ּؙ⌒᮫ܹ۫︵ᩝּּ۟࠭ ࣭۪۟
-> 🧊✿⃘࣪◌ ֪ \`𝗧𝗶́𝘁𝘂𝗹𝗼\` » *${title}* > 🧊✿⃘࣪◌ ֪ \`𝗖𝗮𝗻𝗮𝗹\` » *${canal}* > 🧊✿⃘࣪◌ ֪ \`𝗗𝘂𝗿𝗮𝗰𝗶𝗼́𝗻\` » *${timestamp}* > 🧊✿⃘࣪◌ ֪ \`𝗩𝗶𝘀𝘁𝗮𝘀\` » *${vistas}* > 🧊✿⃘࣪◌ ֪ \`𝗣𝘂𝗯𝗹𝗶𝗰𝗮𝗱𝗼\` » *${ago}* > 🧊✿⃘࣪◌ ֪ \`𝗟𝗶𝗻𝗸\` » ${url} 
+> 🧊✿⃘࣪◌ ֪ \`𝗧𝗶́𝘁𝘂𝗹𝗼\` » *${title}* > 🧊✿⃘࣪◌ ֪ \`𝗖𝗮𝗻𝗮𝗹\` » *${canal}* > 🧊✿⃘࣪◌ ֪ \`𝗗𝘂𝗿𝗮𝗰𝗶𝗼́𝗻\` » *${timestamp}* > K 🧊✿⃘࣪◌ ֪ \`𝗩𝗶𝘀𝘁𝗮𝘀\` » *${vistas}* > 🧊✿⃘࣪◌ ֪ \`𝗣𝘂𝗯𝗹𝗶𝗰𝗮𝗱𝗼\` » *${ago}* > 🧊✿⃘࣪◌ ֪ \`𝗟𝗶𝗻𝗸\` » ${url} 
 ᓭ݄︢݃ୄᰰ𐨎 𝐢︩۪𝆬͡ thước፝֟͜͡ thước︪۪𝆬͡ 𝐢   ᅟᨳᩘ🧁ଓ   ᅟ 𝐢︩۪𝆬͡ thước፝֟͜͡ thước︪۪𝆬͡ 𝐢ୄᰰ𐨎ᓯ︢
 
 > 𐙚 🪵 ｡ Preparando tu descarga... ˙𐙚
@@ -56,17 +54,15 @@ const handler = async (m, { conn, text, command }) => {
       }
     })
 
-    // --- SECCIÓN DE AUDIO MODIFICADA ---
     if (["play", "yta", "ytmp3", "playaudio"].includes(command)) {
       let audioData = null
       try {
-        // Usamos el scraper local en lugar de fetch
         const r = await ytmp3(url) 
         if (r?.status && r?.download?.url) {
           audioData = { link: r.download.url, title: r.metadata?.title }
         }
       } catch (e) {
-        console.error("Error usando ytmp3 scraper:", e)
+        console.error(e)
       }
 
       if (!audioData) {
@@ -83,18 +79,16 @@ const handler = async (m, { conn, text, command }) => {
 
       await conn.sendMessage(m.chat, { react: { text: "✅", key: m.key }})
     }
-    
-    // --- SECCIÓN DE VIDEO MODIFICADA ---
+
     else if (["play2", "ytv", "ytmp4", "mp4"].includes(command)) {
       let videoData = null
       try {
-        // Usamos el scraper local en lugar de fetch
         const r = await ytmp4(url)
         if (r?.status && r?.download?.url) {
           videoData = { link: r.download.url, title: r.metadata?.title }
         }
       } catch (e) {
-         console.error("Error usando ytmp4 scraper:", e)
+         console.error(e)
       }
 
       if (!videoData) {
@@ -105,21 +99,16 @@ const handler = async (m, { conn, text, command }) => {
       await conn.sendMessage(m.chat, {
         video: { url: videoData.link },
         fileName: `${videoData.title || "video"}.mp4`,
-        caption: `${title}`, // Usa el título obtenido de yt-search
+        caption: `${title}`,
         mimetype: "video/mp4"
       }, { quoted: m })
 
       await conn.sendMessage(m.chat, { react: { text: "✅", key: m.key }})
     }
 
-    else {
-      return conn.reply(m.chat, "✧︎ Comando no válido, revisa el menú.", m)
-    }
-
   } catch (error) {
     await conn.sendMessage(m.chat, { react: { text: "❌", key: m.key }})
-    // Mostramos un error más limpio al usuario y logueamos el error completo en consola
-    console.error("Error en comando play:", error)
+    console.error(error)
     return m.reply(`⚠︎ Error inesperado. Por favor, reporta este problema.`)
   }
 }
@@ -129,7 +118,6 @@ handler.tags = ["descargas"]
 
 export default handler
 
-// La función formatViews se mantiene igual
 function formatViews(views) {
   if (!views) return "No disponible"
   if (views >= 1_000_000_000) return `${(views / 1_000_000_000).toFixed(1)}B`
