@@ -1,5 +1,6 @@
 import { ytmp3, ytmp4 } from "../lib/youtubedl.js" 
 import yts from "yt-search"
+// ELIMINAMOS 'node-fetch', ya no es necesario para esto.
 
 const youtubeRegexID = /(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([a-zA-Z0-9_-]{11})/
 
