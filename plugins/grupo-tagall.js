@@ -1,7 +1,7 @@
 const handler = async (m, { isOwner, isAdmin, conn, text, participants, args, command, usedPrefix }) => {
   if (usedPrefix == 'a' || usedPrefix == 'A') return
 
-  const botname = global.botname || 'Ruby Hoshino 💎'
+  const botname = global.botname || '💎 Ruby Hoshino Bot 💎'
   const packname = global.packname || 'Ruby-Hoshino-Bot-MD'
   const redes = global.redes || 'https://github.com/Dioneibi-rip'
   const icons = global.icons || 'https://telegra.ph/file/f21ddc8fd36a7a4e95c77.jpg'
@@ -11,24 +11,22 @@ const handler = async (m, { isOwner, isAdmin, conn, text, participants, args, co
     throw false
   }
 
-  await conn.sendMessage(m.chat, { react: { text: '🔔', key: m.key }})
+  await conn.sendMessage(m.chat, { react: { text: '📣', key: m.key }})
 
-  const mensaje = args.join` ` || '¡Atención a todos los miembros del grupo!'
-  const emoji = '💬'
+  const mensaje = args.join(' ') || '¡Atención a todos los miembros del grupo!'
+
   const titulo = `🌸 *─ᐅ「 𝗔𝗩𝗜𝗦𝗢 𝗚𝗘𝗡𝗘𝗥𝗔𝗟 」*`
+  const encabezado = `╭─❖「 *Invocando a todos los miembros* 」\n`
+  const pie = `╰─❖ 「 ${botname} 」`
 
-  let texto = `${titulo}\n\n`
-  texto += `💫 *Mensaje:* ${mensaje}\n\n`
-  texto += `╭─❖「 *Invocando a todos los miembros* 」\n`
+  const mentions = participants.map(p => p.id)
+  const listaMenciones = participants.map(p => `@${p.id.split('@')[0]}`).join('\n')
 
-  for (const member of participants) {
-    texto += `│ ${emoji} @${member.id.split('@')[0]}\n`
-  }
+  const texto = `${titulo}\n\n💫 *Mensaje:* ${mensaje}\n\n${encabezado}${listaMenciones}\n${pie}`
 
-  texto += `╰─❖ 「 ${botname} 」`
-
-  await conn.reply(m.chat, texto, m, {
-    mentions: participants.map(a => a.id),
+  await conn.sendMessage(m.chat, {
+    text: texto,
+    mentions,
     contextInfo: {
       forwardingScore: 2025,
       isForwarded: true,
@@ -39,7 +37,7 @@ const handler = async (m, { isOwner, isAdmin, conn, text, participants, args, co
         thumbnailUrl: icons,
         thumbnail: icons,
         mediaType: 1,
-        renderLargerThumbnail: false,
+        renderLargerThumbnail: true,
       },
     },
   })
