@@ -39,7 +39,7 @@ const handler = async (m, { isOwner, isAdmin, conn, text, participants, args, co
         thumbnailUrl: icons,
         thumbnail: icons,
         mediaType: 1,
-        renderLargerThumbnail: true,
+        renderLargerThumbnail: false,
       },
     },
   })
