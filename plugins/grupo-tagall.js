@@ -12,7 +12,7 @@ const handler = async (m, { isOwner, isAdmin, conn, text, participants, args, co
 
   let fkontak = null;
   try {
-    const res = await fetch('https://files.catbox.moe/ohar9c.png');
+    const res = await fetch('https://i.postimg.cc/rFfVL8Ps/image.jpg');
     const thumb2 = Buffer.from(await res.arrayBuffer());
     fkontak = {
       key: { participant: '0@s.whatsapp.net', remoteJid: 'status@broadcast', fromMe: false, id: 'Halo' },
