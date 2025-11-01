@@ -12,13 +12,13 @@ const handler = async (m, { isOwner, isAdmin, conn, text, participants, args, co
 
   let fkontak = null;
   try {
-    const res = await fetch('https://i.postimg.cc/rFfVL8Ps/image.jpg');
+    const res = await fetch('https://files.catbox.moe/ohar9c.png');
     const thumb2 = Buffer.from(await res.arrayBuffer());
     fkontak = {
       key: { participant: '0@s.whatsapp.net', remoteJid: 'status@broadcast', fromMe: false, id: 'Halo' },
       message: {
         locationMessage: {
-          name: `${botname}`,
+          name: `¡𝙈𝙀𝙉𝘾𝙄𝙊𝙉 𝙋𝘼𝙍𝘼 𝙏𝙊𝘿𝙊 𝙀𝙇 𝙂𝙍𝙐𝙋𝙊!`,
           jpegThumbnail: thumb2
         }
       },
